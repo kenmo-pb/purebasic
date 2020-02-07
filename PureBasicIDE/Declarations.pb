@@ -157,6 +157,8 @@ Declare Copy()
 Declare Paste()
 Declare PasteAsComment()
 Declare SelectAll()
+Declare ZoomStep(Direction)
+Declare ZoomDefault()
 Declare AddMarker()                       ; handle the marker functionality
 Declare ClearMarkers()
 Declare MarkerJump()

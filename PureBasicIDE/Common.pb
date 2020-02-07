@@ -1050,6 +1050,10 @@ Enumeration 0
   #MENU_DeleteLines
   #MENU_DuplicateSelection
   
+  #MENU_ZoomIn
+  #MENU_ZoomOut
+  #MENU_ZoomDefault
+  
   #MENU_AutoComplete
   #MENU_AutoComplete_OK ; can now have a custom shortcut too
   #MENU_AutoComplete_Abort
@@ -1933,6 +1937,8 @@ EndEnumeration
 #INDENT_Block     = 1
 #INDENT_Sensitive = 2
 
+#ZOOM_Default = 0
+
 
 
 ;
@@ -2437,6 +2443,7 @@ Global InitialSourceLine, MemorizeMarkers, LanguageFile$, ToolsPanelWidth_Hidden
 Global EnableBraceMatch, EnableKeywordMatch, ShowWhiteSpace, ShowIndentGuides, MonitorFileChanges
 Global FormVariable, FormVariableCaption, FormGrid, FormGridSize, FormEventProcedure, FormSkin, FormSkinVersion
 Global FilesPanelMultiline, FilesPanelCloseButtons, FilesPanelNewButton
+Global CurrentZoom, SynchronizingZoom
 
 ; Dialog Window data
 ;
@@ -2662,7 +2669,7 @@ Global Dim FoldEnd$(#MAX_FoldWords)
 
 Global Dim ConfigLines$(#MAX_ConfigLines) ; for temporary storage of source settings while loading/saving
 
-#NbShortcutKeys  = 103
+#NbShortcutKeys = 107
 
 
 Global Dim ShortcutNames.s(#NbShortcutKeys)

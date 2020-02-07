@@ -1409,6 +1409,21 @@ Procedure MainMenuEvent(MenuItemID)
         SendEditorMessage(#SCI_SELECTIONDUPLICATE)
       EndIf
     
+    Case #MENU_ZoomIn
+      If *ActiveSource And *ActiveSource\IsForm = 0 And *ActiveSource <> *ProjectInfo
+        ZoomStep(1)
+      EndIf
+      
+    Case #MENU_ZoomOut
+      If *ActiveSource And *ActiveSource\IsForm = 0 And *ActiveSource <> *ProjectInfo
+        ZoomStep(-1)
+      EndIf
+      
+    Case #MENU_ZoomDefault
+      If *ActiveSource And *ActiveSource\IsForm = 0 And *ActiveSource <> *ProjectInfo
+        ZoomDefault()
+      EndIf
+      
     Case #MENU_ToggleFolds
       *ActiveSource\ToggleFolds = 1-*ActiveSource\ToggleFolds
       LineCount = GetLinesCount(*ActiveSource)-1

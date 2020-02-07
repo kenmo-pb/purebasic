@@ -2673,6 +2673,25 @@ CompilerIf #CompileWindows | #CompileLinux | #CompileMac
   EndProcedure
   
   
+  
+  Procedure HandleZoomChange()
+    If *ActiveSource And *ActiveSource\IsForm = 0 And *ActiveSource <> *ProjectInfo
+      NewZoom = SendEditorMessage(#SCI_GETZOOM)
+      If NewZoom <> CurrentZoom
+        SynchronizingZoom = #True
+        ForEach FileList()
+          If FileList()\IsForm = 0 And @FileList() <> *ProjectInfo And @FileList() <> *ActiveSource
+            ScintillaSendMessage(FileList()\EditorGadget, #SCI_SETZOOM, NewZoom)
+          EndIf
+        Next
+        ChangeCurrentElement(FileList(), *ActiveSource)
+        CurrentZoom = NewZoom
+        SynchronizingZoom = #False
+      EndIf
+    EndIf
+  EndProcedure
+  
+  
   ; This is used by the Template/ MacroError windows
   ; CompilerIf #CompileWindows | #CompileMac
   ProcedureDLL EmptyScintillaCallback(EditorGadget, *scinotify.SCNotification)
@@ -2930,6 +2949,9 @@ CompilerIf #CompileWindows | #CompileLinux | #CompileMac
         
       Case #SCN_ZOOM
         UpdateLineNumbers(*ActiveSource)
+        If SynchronizingZoom = 0
+          HandleZoomChange()
+        EndIf
         
       Case #SCN_CHARADDED
         If *ActiveSource And EditorGadget = *ActiveSource\EditorGadget
@@ -3272,6 +3294,8 @@ CompilerIf #CompileWindows | #CompileLinux | #CompileMac
       EnableGadgetDrop(*ActiveSource\EditorGadget, #PB_Drop_Files, #PB_Drag_Copy)
     CompilerEndIf
     
+    SendEditorMessage(#SCI_SETZOOM, CurrentZoom)
+    
     SendEditorMessage(#SCI_SETLEXER, #SCLEX_CONTAINER, 0)
     
     SendEditorMessage(#SCI_SETTABINDENTS, 0, 0) ; just write tabs/spaces as normal
@@ -3426,6 +3450,18 @@ CompilerIf #CompileWindows | #CompileLinux | #CompileMac
   
   Procedure SelectAll()
     SendEditorMessage(#SCI_SELECTALL, 0, 0)
+  EndProcedure
+  
+  Procedure ZoomStep(Direction)
+    If Direction > 0
+      SendEditorMessage(#SCI_ZOOMIN)
+    ElseIf Direction < 0
+      SendEditorMessage(#SCI_ZOOMOUT)
+    EndIf
+  EndProcedure
+  
+  Procedure ZoomDefault()
+    SendEditorMessage(#SCI_SETZOOM, #ZOOM_Default)
   EndProcedure
   
   Procedure AddMarker()
