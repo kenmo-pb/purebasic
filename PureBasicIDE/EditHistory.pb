@@ -29,6 +29,10 @@ UseSQLiteDatabase()
 ; diff events will require more steps than fit in the cache and lead to bad performance
 #HISTORY_EVENT_MAX_DIFFS = 75
 
+; Set to #True to use PB-native diff functions.
+; It may be slower, but it does not require the compiled C components.
+#HISTORY_USE_NATIVE_DIFF = #False
+
 ;- Import extra sqlite stuff
 ;
 ImportC ""
@@ -60,21 +64,25 @@ EndImport
 
 ;- Libmba stuff
 ;
-CompilerIf #CompileWindows
-  #Diff_Library = "libmba/libmba.lib"
-CompilerElse
-  #Diff_Library = "libmba/libmba.a"
+CompilerIf Not #HISTORY_USE_NATIVE_DIFF
+  
+  CompilerIf #CompileWindows
+    #Diff_Library = "libmba/libmba.lib"
+  CompilerElse
+    #Diff_Library = "libmba/libmba.a"
+  CompilerEndIf
+  
+  ImportC #BUILD_DIRECTORY + #Diff_Library
+    
+    diff.l(*a, aoff.l, n.l, *b, boff.l, m.l, *idx_fn, *cmp_fn, *context, dmax.l, *ses, *sn.LONG, *buf)
+    
+    varray_new(membsize, *al)
+    varray_del.l(*va)
+    varray_get(*va, idx)
+    
+  EndImport
+  
 CompilerEndIf
-
-ImportC #BUILD_DIRECTORY + #Diff_Library
-  
-  diff.l(*a, aoff.l, n.l, *b, boff.l, m.l, *idx_fn, *cmp_fn, *context, dmax.l, *ses, *sn.LONG, *buf)
-  
-  varray_new(membsize, *al)
-  varray_del.l(*va)
-  varray_get(*va, idx)
-  
-EndImport
 
 Enumeration
   #DIFF_MATCH = 1
@@ -88,6 +96,12 @@ Structure diff_edit Align #PB_Structure_AlignC
   off.l           ; /* off into s1 if MATCH or DELETE but s2 if INSERT */
   len.l
 EndStructure
+
+;- Native Diff implementation
+
+CompilerIf #HISTORY_USE_NATIVE_DIFF
+  XIncludeFile "EditHistory-Diff.pb"
+CompilerEndIf
 
 ;- Data types in history
 ;
