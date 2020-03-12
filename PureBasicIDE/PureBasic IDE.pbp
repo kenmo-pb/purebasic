@@ -349,12 +349,93 @@
     </file>
   </section>
   <section name="targets">
-    <target name="Default Target" enabled="1" default="1">
+    <target name="Windows - 32-bit" enabled="1" default="1">
       <inputfile value="PureBasic.pb"/>
-      <outputfile value=""/>
-      <executable value="C:\Users\Fred\Desktop\pbide.exe"/>
+      <outputfile value="..\Build\x86\ide\PureBasic.exe"/>
+      <executable value="..\Build\x86\ide\PureBasic.exe"/>
       <directory value="data\"/>
       <options thread="1" xpskin="1" dpiaware="1" debug="1"/>
+      <icon enable="1">data\PBLogoBig.ico</icon>
+      <format exe="console" cpu="0"/>
+      <debugger custom="1" type="ide"/>
+      <constants>
+        <constant value="#BUILD_DIRECTORY=..\Build\x86\ide\" enable="1"/>
+        <constant value="#SpiderBasic=1" enable="0"/>
+        <constant value="#BUILD_X86=1" enable="1"/>
+        <constant value="#BUILD_WINDOWS=1" enable="1"/>
+      </constants>
+    </target>
+    <target name="Windows - 64-bit" enabled="1" default="0">
+      <inputfile value="PureBasic.pb"/>
+      <outputfile value="..\Build\x64\ide\PureBasic.exe"/>
+      <executable value="..\Build\x64\ide\PureBasic.exe"/>
+      <directory value="data\"/>
+      <options thread="1" xpskin="1" dpiaware="1" debug="1"/>
+      <icon enable="1">data\PBLogoBig.ico</icon>
+      <format exe="console" cpu="0"/>
+      <debugger custom="1" type="ide"/>
+      <constants>
+        <constant value="#BUILD_DIRECTORY=..\Build\x64\ide\" enable="1"/>
+        <constant value="#SpiderBasic=1" enable="0"/>
+        <constant value="#BUILD_X64=1" enable="1"/>
+        <constant value="#BUILD_WINDOWS=1" enable="1"/>
+      </constants>
+    </target>
+    <target name="Linux - 32-bit" enabled="1" default="0">
+      <inputfile value="PureBasic.pb"/>
+      <outputfile value="..\Build\x86\ide\PureBasic"/>
+      <executable value="..\Build\x86\ide\PureBasic"/>
+      <directory value="data\"/>
+      <options thread="1" xpskin="1" dpiaware="1" debug="1"/>
+      <icon enable="0">data\PBLogoBig.ico</icon>
+      <format exe="console" cpu="0"/>
+      <debugger custom="1" type="ide"/>
+      <constants>
+        <constant value="#BUILD_DIRECTORY=..\Build\x86\ide\" enable="1"/>
+        <constant value="#SpiderBasic=1" enable="0"/>
+        <constant value="#BUILD_X86=1" enable="1"/>
+        <constant value="#BUILD_LINUX=1" enable="1"/>
+      </constants>
+    </target>
+    <target name="Linux - 64-bit" enabled="1" default="0">
+      <inputfile value="PureBasic.pb"/>
+      <outputfile value="..\Build\x64\ide\PureBasic"/>
+      <executable value="..\Build\x64\ide\PureBasic"/>
+      <directory value="data\"/>
+      <options thread="1" xpskin="1" dpiaware="1" debug="1"/>
+      <icon enable="0">data\PBLogoBig.ico</icon>
+      <format exe="console" cpu="0"/>
+      <debugger custom="1" type="ide"/>
+      <constants>
+        <constant value="#BUILD_DIRECTORY=..\Build\x64\ide\" enable="1"/>
+        <constant value="#SpiderBasic=1" enable="0"/>
+        <constant value="#BUILD_X64=1" enable="1"/>
+        <constant value="#BUILD_LINUX=1" enable="1"/>
+      </constants>
+    </target>
+    <target name="MacOS - 32-bit" enabled="1" default="0">
+      <inputfile value="PureBasic.pb"/>
+      <outputfile value="..\Build\x86\ide\PureBasic.app"/>
+      <executable value="..\Build\x86\ide\PureBasic.app"/>
+      <directory value="data\"/>
+      <options thread="1" xpskin="1" dpiaware="1" debug="1"/>
+      <icon enable="1">data\logo\PB 3D Mac Icon.icns</icon>
+      <format exe="console" cpu="0"/>
+      <debugger custom="1" type="ide"/>
+      <constants>
+        <constant value="#BUILD_DIRECTORY=..\Build\x86\ide\" enable="1"/>
+        <constant value="#SpiderBasic=1" enable="0"/>
+        <constant value="#BUILD_X86=1" enable="1"/>
+        <constant value="#BUILD_MACOS=1" enable="1"/>
+      </constants>
+    </target>
+    <target name="MacOS - 64-bit" enabled="1" default="0">
+      <inputfile value="PureBasic.pb"/>
+      <outputfile value="..\Build\x64\ide\PureBasic.app"/>
+      <executable value="..\Build\x64\ide\PureBasic.app"/>
+      <directory value="data\"/>
+      <options thread="1" xpskin="1" dpiaware="1" debug="1"/>
+      <icon enable="1">data\logo\PB 3D Mac Icon.icns</icon>
       <format exe="console" cpu="0"/>
       <debugger custom="1" type="ide"/>
       <constants>
@@ -362,6 +443,8 @@
         <constant value="#FredLocalCompile=1" enable="0"/>
         <constant value="#SpiderBasic=1" enable="0"/>
         <constant value="#SVNVersion=&quot;v5.70&quot;" enable="0"/>
+        <constant value="#BUILD_X64=1" enable="1"/>
+        <constant value="#BUILD_MACOS=1" enable="1"/>
       </constants>
     </target>
   </section>

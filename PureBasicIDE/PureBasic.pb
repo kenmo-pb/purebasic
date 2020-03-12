@@ -4,6 +4,35 @@
 ;  See LICENSE and LICENSE-FANTAISIE in the project root for license information.
 ;--------------------------------------------------------------------------------------------
 
+; Validate target OS against the current compiler OS
+CompilerSelect #PB_Compiler_OS
+  CompilerCase #PB_OS_Windows
+    CompilerIf Defined(BUILD_LINUX, #PB_Constant) Or Defined(BUILD_MACOS, #PB_Constant)
+      CompilerError "Non-Windows target"
+    CompilerEndIf
+  CompilerCase #PB_OS_Linux
+    CompilerIf Defined(BUILD_WINDOWS, #PB_Constant) Or Defined(BUILD_MACOS, #PB_Constant)
+      CompilerError "Non-Linux target"
+    CompilerEndIf
+  CompilerCase #PB_OS_MacOS
+    CompilerIf Defined(BUILD_WINDOWS, #PB_Constant) Or Defined(BUILD_LINUX, #PB_Constant)
+      CompilerError "Non-MacOS target"
+    CompilerEndIf
+CompilerEndSelect
+
+; Validate target processor against the current compiler processor
+CompilerSelect #PB_Compiler_Processor
+  CompilerCase #PB_Processor_x86
+    CompilerIf Defined(BUILD_X64, #PB_Constant)
+      CompilerError "Non-x86 target"
+    CompilerEndIf
+  CompilerCase #PB_Processor_x64
+    CompilerIf Defined(BUILD_X86, #PB_Constant)
+      CompilerError "Non-x64 target"
+    CompilerEndIf
+CompilerEndSelect
+
+
 ; Change: Now *every* file in the source tree is included from this main file
 ; This will reduce the number of XIncludeFile's in each file, and there is no more need to check dependencies.
 ; Even platform specific files are always included. Whether their code is compiled
