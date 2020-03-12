@@ -40,27 +40,6 @@ CompilerEndSelect
 
 XIncludeFile "CompilerFlags.pb"
 
-; Fred config, easier to handle switch between PB versions when debugging the IDE
-;
-CompilerIf Defined(FredLocalCompile, #PB_Constant) And Not Defined(BUILD_DIRECTORY, #PB_Constant)
-  CompilerIf #SpiderBasic
-    #FredProcessorPath = "javascript"
-  CompilerElseIf #PB_Compiler_Processor = #PB_Processor_x64
-    #FredProcessorPath = "x64"
-  CompilerElse
-    #FredProcessorPath = "x86"
-  CompilerEndIf
-  
-  CompilerIf #PB_Compiler_OS = #PB_OS_Linux
-    #BUILD_DIRECTORY = "/home/fred/svn/"+#SVNVersion+"/Build/"+#FredProcessorPath+"/ide/"
-  CompilerElseIf #PB_Compiler_OS = #PB_OS_MacOS
-    #BUILD_DIRECTORY = "/Users/fred/svn/"+#SVNVersion+"/Build/"+#FredProcessorPath+"/ide/"
-  CompilerElse
-    #BUILD_DIRECTORY = "C:\PureBasic\Svn\"+#SVNVersion+"\Build\"+#FredProcessorPath+"\ide\"
-  CompilerEndIf
-CompilerEndIf
-
-
 XIncludeFile #BUILD_DIRECTORY + "BuildInfo.pb"
 XIncludeFile ".." + #Separator + "DialogManager" + #Separator + "Common.pb" ; must be before Common.pb
 XIncludeFile "Common.pb"                                                    ; must be before DebuggerCommon.pb

@@ -80,25 +80,7 @@ CompilerIf #CompileWindows
     
     ; Ensure it won't happen in release build !
     CompilerIf #PB_Compiler_Debugger
-      
-      CompilerIf Defined(FredLocalCompile, #PB_Constant) ; Fred config
-        CompilerIf #PB_Compiler_Processor = #PB_Processor_x64
-          CompilerIf #SpiderBasic
-            PureBasicPath$ = "C:\PureBasic\Svn\"+#SVNVersion+"\Build\SpiderBasic_x64\"
-          CompilerElse
-            PureBasicPath$ = "C:\PureBasic\Svn\"+#SVNVersion+"\Build\PureBasic_x64\"
-          CompilerEndIf
-        CompilerElse
-          CompilerIf #SpiderBasic
-            PureBasicPath$ = "C:\PureBasic\Svn\"+#SVNVersion+"\Build\SpiderBasic_x86\"
-          CompilerElse
-            PureBasicPath$ = "C:\PureBasic\Svn\"+#SVNVersion+"\Build\PureBasic_x86\"
-          CompilerEndIf
-        CompilerEndIf
-      CompilerEndIf
-      
       PureBasicPath$ = #PB_Compiler_Home
-      
     CompilerEndIf
     
     

@@ -440,9 +440,7 @@
       <debugger custom="1" type="ide"/>
       <constants>
         <constant value="#BUILD_DIRECTORY=..\Build\x64\ide\" enable="1"/>
-        <constant value="#FredLocalCompile=1" enable="0"/>
         <constant value="#SpiderBasic=1" enable="0"/>
-        <constant value="#SVNVersion=&quot;v5.70&quot;" enable="0"/>
         <constant value="#BUILD_X64=1" enable="1"/>
         <constant value="#BUILD_MACOS=1" enable="1"/>
       </constants>
