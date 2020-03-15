@@ -33,6 +33,7 @@
               <vbox spacing="5">
                 <checkbox id="#GADGET_Project_SetDefault" lang="Project:SetDefault" />
                 <checkbox id="#GADGET_Project_CloseAllFiles" lang="Project:CloseAllFiles" />
+                <checkbox id="#GADGET_Project_SourceControlMode" lang="Project:SourceControlMode" />
 
                 <empty height="5" />
 

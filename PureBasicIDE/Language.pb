@@ -659,6 +659,7 @@ DataSection
   Data$ "LoadOptions",      "Loading Options"
   Data$ "SetDefault",       "Set as default project (always open when the IDE starts)"
   Data$ "CloseAllFiles",    "Close all sources when closing the project"
+  Data$ "SourceControlMode","Source control mode"
   Data$ "WhenOpening",      "When opening the project..."
   Data$ "OpenLoadLast",     "load all sources that were open last time"
   Data$ "OpenLoadAll",      "load all sources of the project"

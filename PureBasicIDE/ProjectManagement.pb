@@ -895,6 +895,7 @@ Procedure LoadProject(Filename$)
       ProjectOpenMode   = #Project_Open_LoadLast
       ProjectShowLog    = 1
       AutoCloseBuildWindow = 0
+      ProjectSourceControlMode = 0
       ResetList(ProjectFiles())
       
       BasePath$         = GetPathPart(FileName$)
@@ -908,6 +909,7 @@ Procedure LoadProject(Filename$)
           ProjectName$      = Xml_SingleLine(GetXMLAttribute(*Options, "name"))
           ProjectCloseFiles = Xml_Boolean(GetXMLAttribute(*Options, "closefiles"), ProjectCloseFiles)
           ProjectOpenMode   = Xml_Integer(GetXMLAttribute(*Options, "openmode"))
+          ProjectSourceControlMode = Xml_Boolean(GetXMLAttribute(*Options, "sourcecontrol"), ProjectSourceControlMode)
         EndIf
         ProjectComments$  = Xml_MultiLine(ReadNode(*Config, "comment"))
         
@@ -1378,6 +1380,7 @@ Procedure SaveProject(ShowErrors)
     SetXMLAttribute(*Options, "closefiles", Str(ProjectCloseFiles))
     SetXMLAttribute(*Options, "openmode",   Str(ProjectOpenMode))
     SetXMLAttribute(*Options, "name",       ProjectName$)
+    SetXMLAttribute(*Options, "sourcecontrol", Str(ProjectSourceControlMode))
     
     If ProjectComments$
       AppendNode(*Config, "comment", ProjectComments$)
@@ -2225,6 +2228,7 @@ Procedure ProjectOptionsEvents(EventID)
           EndIf
           
           ProjectCloseFiles = GetGadgetState(#GADGET_Project_CloseAllFiles)
+          ProjectSourceControlMode = GetGadgetState(#GADGET_Project_SourceControlMode)
           
           If GetGadgetState(#GADGET_Project_OpenLoadLast)
             ProjectOpenMode = #Project_Open_LoadLast
@@ -2658,6 +2662,7 @@ Procedure OpenProjectOptions(NewProject)
       
       SetGadgetState(#GADGET_Project_SetDefault,    IsEqualFile(ProjectFile$, DefaultProjectFile$))
       SetGadgetState(#GADGET_Project_CloseAllFiles, ProjectCloseFiles)
+      SetGadgetState(#GADGET_Project_SourceControlMode, ProjectSourceControlMode)
       
       Select ProjectOpenMode
         Case #Project_Open_LoadLast:    SetGadgetState(#GADGET_Project_OpenLoadLast,    1)

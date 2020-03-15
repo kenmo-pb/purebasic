@@ -766,6 +766,7 @@ Runtime Enumeration 1 ; 0 is reserved for uninitialized #PB_Any
   #GADGET_Project_Comments
   #GADGET_Project_SetDefault
   #GADGET_Project_CloseAllFiles
+  #GADGET_Project_SourceControlMode
   #GADGET_Project_OpenLoadLast
   #GADGET_Project_OpenLoadAll
   #GADGET_Project_OpenLoadDefault
@@ -2743,6 +2744,7 @@ Global IsProjectBusy = 0
 Global ProjectFile$, ProjectName$, ProjectComments$, DefaultProjectFile$, LastOpenProjectFile$
 Global ProjectExplorerPattern, ProjectExplorerPath$
 Global ProjectCloseFiles.l
+Global ProjectSourceControlMode.l
 Global ProjectOpenMode.l, ProjectShowLog.l, AutoCloseBuildWindow.l
 Global ProjectLastOpenDate, ProjectLastOpenHost$, ProjectLastOpenUser$, ProjectLastOpenEditor$
 Global *DefaultTarget.CompileTarget
