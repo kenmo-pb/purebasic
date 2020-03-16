@@ -1266,7 +1266,7 @@ Procedure LoadProject(Filename$)
         Next
         
         ; Display our file warning (if any)
-        If WarnFiles$ <> ""
+        If WarnFiles$ <> "" And ProjectSourceControlMode = 0
           MessageRequester(#ProductName$, Language("Project", "FilesChanged")+":"+#NewLine+WarnFiles$, #FLAG_Warning)
         EndIf
         
@@ -1371,7 +1371,11 @@ Procedure SaveProject(ShowErrors)
     *Main = CreateXMLNode(RootXMLNode(#XML_SaveProject), "project")
     SetXMLAttribute(*Main, "xmlns",   #ProjectFileNamespace$)
     SetXMLAttribute(*Main, "version", #Project_VersionString)
-    SetXMLAttribute(*Main, "creator", DefaultCompiler\VersionString$)
+    If ProjectLastOpenEditor$ And ProjectSourceControlMode <> 0
+      SetXMLAttribute(*Main, "creator", ProjectLastOpenEditor$)
+    Else
+      SetXMLAttribute(*Main, "creator", DefaultCompiler\VersionString$)
+    EndIf
     
     ; User-changable configuration
     ;
@@ -1380,7 +1384,9 @@ Procedure SaveProject(ShowErrors)
     SetXMLAttribute(*Options, "closefiles", Str(ProjectCloseFiles))
     SetXMLAttribute(*Options, "openmode",   Str(ProjectOpenMode))
     SetXMLAttribute(*Options, "name",       ProjectName$)
-    SetXMLAttribute(*Options, "sourcecontrol", Str(ProjectSourceControlMode))
+    If ProjectSourceControlMode <> 0
+      SetXMLAttribute(*Options, "sourcecontrol", Str(ProjectSourceControlMode))
+    EndIf
     
     If ProjectComments$
       AppendNode(*Config, "comment", ProjectComments$)
@@ -1403,10 +1409,12 @@ Procedure SaveProject(ShowErrors)
     
     ; For the ProjectInfo
     ;
-    *LastOpen = AppendNode(*ConfigData, "lastopen")
-    SetXMLAttribute(*LastOpen, "date", FormatDate("%yyyy-%mm-%dd %hh:%ii", Date()))
-    SetXMLAttribute(*LastOpen, "user", UserName())
-    SetXMLAttribute(*LastOpen, "host", ComputerName())
+    If ProjectSourceControlMode = 0
+      *LastOpen = AppendNode(*ConfigData, "lastopen")
+      SetXMLAttribute(*LastOpen, "date", FormatDate("%yyyy-%mm-%dd %hh:%ii", Date()))
+      SetXMLAttribute(*LastOpen, "user", UserName())
+      SetXMLAttribute(*LastOpen, "host", ComputerName())
+    EndIf
     
     ; Project file list
     ;
@@ -1432,7 +1440,7 @@ Procedure SaveProject(ShowErrors)
       EndIf
       
       ; files are saved in CloseProject() before this, so its ok
-      If ProjectFiles()\ShowWarning
+      If ProjectFiles()\ShowWarning And ProjectSourceControlMode = 0
         *Fingerprint = AppendNode(*File, "fingerprint")
         SetXMLAttribute(*Fingerprint, "md5", FileFingerprint(ProjectFiles()\FileName$, #PB_Cipher_MD5))
       EndIf
