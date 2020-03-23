@@ -1243,7 +1243,7 @@ Procedure LoadProject(Filename$)
             EndIf
             
           Else
-            If ProjectFiles()\ShowWarning And ProjectFiles()\Md5$ <> LCase(FileFingerprint(ProjectFiles()\FileName$, #PB_Cipher_MD5))
+            If ProjectFiles()\ShowWarning And ProjectFiles()\Md5$ <> "" And ProjectFiles()\Md5$ <> LCase(FileFingerprint(ProjectFiles()\FileName$, #PB_Cipher_MD5))
               WarnFiles$ + #NewLine + ProjectFiles()\FileName$
             EndIf
             
@@ -1381,18 +1381,22 @@ Procedure SaveProject(ShowErrors)
     ;
     *Config = NewSection(*Main, "config")
     *Options = AppendNode(*Config, "options")
-    SetXMLAttribute(*Options, "closefiles", Str(ProjectCloseFiles))
-    SetXMLAttribute(*Options, "openmode",   Str(ProjectOpenMode))
-    SetXMLAttribute(*Options, "name",       ProjectName$)
     If ProjectSourceControlMode <> 0
+      SetXMLAttribute(*Options, "closefiles", "1")
+      SetXMLAttribute(*Options, "openmode",   Str(#Project_Open_LoadMain))
+      SetXMLAttribute(*Options, "name",       ProjectName$)
       SetXMLAttribute(*Options, "sourcecontrol", Str(ProjectSourceControlMode))
+    Else
+      SetXMLAttribute(*Options, "closefiles", Str(ProjectCloseFiles))
+      SetXMLAttribute(*Options, "openmode",   Str(ProjectOpenMode))
+      SetXMLAttribute(*Options, "name",       ProjectName$)
     EndIf
     
     If ProjectComments$
       AppendNode(*Config, "comment", ProjectComments$)
     EndIf
     
-    If AutoCloseBuildWindow
+    If AutoCloseBuildWindow And ProjectSourceControlMode = 0
       *BuildWindow = AppendNode(*Config, "buildwindow")
       SetXMLAttribute(*BuildWindow, "autoclose", "1")
     EndIf
@@ -1401,8 +1405,13 @@ Procedure SaveProject(ShowErrors)
     ;
     *ConfigData = NewSection(*Main, "data")
     *ViewPath = AppendNode(*ConfigData, "explorer")
-    SetXMLAttribute(*ViewPath, "view",    CreateRelativePath(BasePath$, ProjectExplorerPath$))
-    SetXMLAttribute(*ViewPath, "pattern", Str(ProjectExplorerPattern))
+    If ProjectSourceControlMode <> 0
+      SetXMLAttribute(*ViewPath, "view",    ".")
+      SetXMLAttribute(*ViewPath, "pattern", "0")
+    Else
+      SetXMLAttribute(*ViewPath, "view",    CreateRelativePath(BasePath$, ProjectExplorerPath$))
+      SetXMLAttribute(*ViewPath, "pattern", Str(ProjectExplorerPattern))
+    EndIf
     
     *Showlog = AppendNode(*ConfigData, "log")
     SetXMLAttribute(*ShowLog, "show", Str(ProjectShowLog))
