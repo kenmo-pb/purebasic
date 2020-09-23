@@ -23,7 +23,7 @@ endif
 
 ifeq ($(PB_WINDOWS),1)
 	PBCOMPILER = pbcompiler /QUIET
-	IDE = $(HOME)/$(IDENAME).exe
+	IDE = $(TARGET)/$(IDENAME).exe
 	IDEFLAGS = /THREAD /UNICODE /XP /USER /ICON "$(ICOFILE)" /DPIAWARE
 	MAKEEXE = /EXE
 	PBPACK = $(TARGET)/pbpack.exe
@@ -50,7 +50,7 @@ else
 	PBCOMPILER = pbcompiler -q
 
 ifeq ($(PB_MACOS),1)
-	IDE = $(HOME)/$(IDENAME).app
+	IDE = $(TARGET)/$(IDENAME).app
 	IDEFLAGS = --thread --unicode -n "$(OSXICOFILE)"
 	MACPLIST = $(TARGET)/macplist
 	MACPLISTCOMMAND = $(TARGET)/macplist $(HOME)/$(IDENAME).app
@@ -60,7 +60,7 @@ ifeq ($(PB_MACOS),1)
 	endif
 else
 	IDENAME_LOWERCASE = $(shell echo $(IDENAME) | tr A-Z a-z)
-	IDE = $(HOME)/compilers/$(IDENAME_LOWERCASE)
+	IDE = $(TARGET)/compilers/$(IDENAME_LOWERCASE)
 	IDEFLAGS = --thread --unicode --subsystem gtk2
 	MACPLIST =
 	MACPLISTCOMMAND =
