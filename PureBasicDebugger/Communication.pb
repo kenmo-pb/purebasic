@@ -1047,7 +1047,11 @@ Procedure Debugger_NetworkConnect(Mode, Host$, Port, Password$)
   ;
   RunningDebuggers()\ID = GetUniqueID()
   
-  RunningDebuggers()\Communication = CreateNetworkCommunication(Mode, Host$, Port, Password$)
+  CompilerIf #DISABLE_C_DEPENDENCIES
+    RunningDebuggers()\Communication = 0
+  CompilerElse
+    RunningDebuggers()\Communication = CreateNetworkCommunication(Mode, Host$, Port, Password$)
+  CompilerEndIf
   If RunningDebuggers()\Communication = 0
     DeleteElement(RunningDebuggers())
     Debug " -- Debugger_ConnectProgram() failed: CreateNetworkClientCommunication()"

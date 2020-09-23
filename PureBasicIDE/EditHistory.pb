@@ -60,21 +60,25 @@ EndImport
 
 ;- Libmba stuff
 ;
-CompilerIf #CompileWindows
-  #Diff_Library = "libmba/libmba.lib"
-CompilerElse
-  #Diff_Library = "libmba/libmba.a"
+CompilerIf Not #DISABLE_C_DEPENDENCIES
+  
+  CompilerIf #CompileWindows
+    #Diff_Library = "libmba/libmba.lib"
+  CompilerElse
+    #Diff_Library = "libmba/libmba.a"
+  CompilerEndIf
+  
+  ImportC #BUILD_DIRECTORY + #Diff_Library
+    
+    diff.l(*a, aoff.l, n.l, *b, boff.l, m.l, *idx_fn, *cmp_fn, *context, dmax.l, *ses, *sn.LONG, *buf)
+    
+    varray_new(membsize, *al)
+    varray_del.l(*va)
+    varray_get(*va, idx)
+    
+  EndImport
+  
 CompilerEndIf
-
-ImportC #BUILD_DIRECTORY + #Diff_Library
-  
-  diff.l(*a, aoff.l, n.l, *b, boff.l, m.l, *idx_fn, *cmp_fn, *context, dmax.l, *ses, *sn.LONG, *buf)
-  
-  varray_new(membsize, *al)
-  varray_del.l(*va)
-  varray_get(*va, idx)
-  
-EndImport
 
 Enumeration
   #DIFF_MATCH = 1
@@ -212,7 +216,7 @@ EndProcedure
 Procedure StartHistorySession()
   
   ; no setup if history is disabled
-  If EnableHistory = #False
+  If EnableHistory = #False Or #DISABLE_C_DEPENDENCIES = #True
     ProcedureReturn
   EndIf
   
@@ -714,58 +718,62 @@ EndProcedure
 ; returns size of diff'ed content
 ; returns 0 if diff is larger than real file
 Procedure History_MakeDiff(*Output, *OutSize.INTEGER, *Event.HistoryEvent, *Previous.HistoryEvent)
-  Protected Dim NewLines.HistoryDiffLine(1000)
-  Protected Dim OldLines.HistoryDiffLine(1000)
-  
-  LinesNew = History_DiffPreProcess(*Event, NewLines())
-  LinesOld = History_DiffPreProcess(*Previous, OldLines())
-  
-  *ses = varray_new(SizeOf(diff_edit), #Null)
-  sn.l = 0
-  
-  diff(@OldLines(0), 0, LinesOld, @NewLines(0), 0, LinesNew, @History_Diff_idx(), @History_Diff_cmp(), #Null, 0, *ses, @sn, 0)
-  
-  *OutputEnd = *Output + *OutSize\i
-  *Pointer.PTR = *Output
-  *Pointer\l = *Event\Size ; store original size
-  *Pointer + 4             ; skip original size storage
-  
-  For i = 0 To sn-1
-    *edit.diff_edit = varray_get(*ses, i)
-    If *Pointer + 5 > *OutputEnd
-      varray_del(*ses)
-      ProcedureReturn #False
-    EndIf
+  CompilerIf #DISABLE_C_DEPENDENCIES
+    ProcedureReturn 0
+  CompilerElse
+    Protected Dim NewLines.HistoryDiffLine(1000)
+    Protected Dim OldLines.HistoryDiffLine(1000)
     
-    Select *edit\op
-      Case #DIFF_MATCH
-        *Pointer\b = 'C': *Pointer + 1
-        *Pointer\l = History_DiffEditSize(*edit, OldLines()): *Pointer + 4
-        
-      Case #DIFF_DELETE
-        *Pointer\b = 'D': *Pointer + 1
-        *Pointer\l = History_DiffEditSize(*edit, OldLines()): *Pointer + 4
-        
-      Case #DIFF_INSERT
-        *Pointer\b = 'A': *Pointer + 1
-        EditSize = History_DiffEditSize(*edit, NewLines())
-        *Pointer\l = EditSize: *Pointer + 4
-        
-        If *Pointer + EditSize > *OutputEnd
-          varray_del(*ses)
-          ProcedureReturn #False
-        EndIf
-        
-        CopyMemory(*Event\Content + NewLines(*edit\off)\Offset, *Pointer, EditSize)
-        *Pointer + EditSize
-        
-    EndSelect
-  Next i
-  
-  varray_del(*ses)
-  
-  *OutSize\i = *Pointer - *Output
-  ProcedureReturn #True
+    LinesNew = History_DiffPreProcess(*Event, NewLines())
+    LinesOld = History_DiffPreProcess(*Previous, OldLines())
+    
+    *ses = varray_new(SizeOf(diff_edit), #Null)
+    sn.l = 0
+    
+    diff(@OldLines(0), 0, LinesOld, @NewLines(0), 0, LinesNew, @History_Diff_idx(), @History_Diff_cmp(), #Null, 0, *ses, @sn, 0)
+    
+    *OutputEnd = *Output + *OutSize\i
+    *Pointer.PTR = *Output
+    *Pointer\l = *Event\Size ; store original size
+    *Pointer + 4             ; skip original size storage
+    
+    For i = 0 To sn-1
+      *edit.diff_edit = varray_get(*ses, i)
+      If *Pointer + 5 > *OutputEnd
+        varray_del(*ses)
+        ProcedureReturn #False
+      EndIf
+      
+      Select *edit\op
+        Case #DIFF_MATCH
+          *Pointer\b = 'C': *Pointer + 1
+          *Pointer\l = History_DiffEditSize(*edit, OldLines()): *Pointer + 4
+          
+        Case #DIFF_DELETE
+          *Pointer\b = 'D': *Pointer + 1
+          *Pointer\l = History_DiffEditSize(*edit, OldLines()): *Pointer + 4
+          
+        Case #DIFF_INSERT
+          *Pointer\b = 'A': *Pointer + 1
+          EditSize = History_DiffEditSize(*edit, NewLines())
+          *Pointer\l = EditSize: *Pointer + 4
+          
+          If *Pointer + EditSize > *OutputEnd
+            varray_del(*ses)
+            ProcedureReturn #False
+          EndIf
+          
+          CopyMemory(*Event\Content + NewLines(*edit\off)\Offset, *Pointer, EditSize)
+          *Pointer + EditSize
+          
+      EndSelect
+    Next i
+    
+    varray_del(*ses)
+    
+    *OutSize\i = *Pointer - *Output
+    ProcedureReturn #True
+  CompilerEndIf
 EndProcedure
 
 

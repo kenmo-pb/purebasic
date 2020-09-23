@@ -44,6 +44,12 @@ CompilerIf Defined(Debug, #PB_Constant) = 0
   #DEBUG = 0
 CompilerEndIf
 
+; Set this to #True to disable the C dependencies (libmba, NetworkSupport)
+; NOTE: This will disable some features (Session History, network debugger)
+CompilerIf Not Defined(DISABLE_C_DEPENDENCIES, #PB_Constant)
+  #DISABLE_C_DEPENDENCIES = #True
+CompilerEndIf
+
 
 CompilerIf Not Defined(SpiderBasic, #PB_Constant)
   #SpiderBasic = 0
