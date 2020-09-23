@@ -40,7 +40,6 @@ ifeq ($(PB_WINDOWS),1)
 	MACPLISTCOMMAND =
 	ONERROR = /LINENUMBERING
 	DOMAINSOCKET =
-	COLORTABLE = $(HOME)/Catalogs/ColorTable.xml
 
 	ECHOQUOTE =
 
@@ -80,7 +79,6 @@ endif
 	DIALOGCOMPILER = $(PB_BUILDTARGET)/dialogcompiler/dialogcompiler
 	ONERROR = --linenumbering
 	DOMAINSOCKET = $(TARGET)/AutomationDomainSocket.o
-	COLORTABLE = $(HOME)/catalogs/ColorTable.xml
 
 	ECHOQUOTE = "
 
@@ -92,8 +90,7 @@ endif
 PACKLEVEL = -q -l4
 
 THEMES = \
-	$(TARGET)/DefaultTheme.zip \
-	$(THEMEFOLDER)/SilkTheme.zip
+	$(TARGET)/DefaultTheme.zip
 
 PROFILERICONS = \
 	$(TARGET)/arrow.$(ICON) \
@@ -123,7 +120,6 @@ $(TARGET)/CreateApp.pb \
 $(TARGET)/Updates.pb
 
 DEPENDENCIES = \
-	$(COLORTABLE) \
 	$(TARGET)/images.pak \
 	*.pb \
 	../PureBasicDebugger/*.pb \
@@ -231,13 +227,7 @@ $(TARGET)/DefaultTheme.zip: data/DefaultTheme/*
 	rm -f $(TARGET)/DefaultTheme.zip
 	zip -jq $(TARGET)/DefaultTheme.zip data/DefaultTheme/*
 
-$(THEMEFOLDER)/SilkTheme.zip: data/SilkTheme/*
-	-mkdir "$(THEMEFOLDER)"
-	rm -f $(THEMEFOLDER)/SilkTheme.zip
-	zip -jq $(THEMEFOLDER)/SilkTheme.zip data/SilkTheme/*
 
-$(COLORTABLE): data/ColorTable.xml
-	cp -f data/ColorTable.xml $(COLORTABLE)
 
 # this also works on windows
 #
