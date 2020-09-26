@@ -352,6 +352,7 @@
     <target name="Windows - 32-bit" enabled="1" default="1">
       <inputfile value="PureBasic.pb"/>
       <outputfile value="..\Build\x86\ide\PureBasic.exe"/>
+      <commandline value="/NOEXT"/>
       <executable value="..\Build\x86\ide\PureBasic.exe"/>
       <directory value="data\"/>
       <options thread="1" xpskin="1" dpiaware="1" debug="1"/>
@@ -368,6 +369,7 @@
     <target name="Windows - 64-bit" enabled="1" default="0">
       <inputfile value="PureBasic.pb"/>
       <outputfile value="..\Build\x64\ide\PureBasic.exe"/>
+      <commandline value="/NOEXT"/>
       <executable value="..\Build\x64\ide\PureBasic.exe"/>
       <directory value="data\"/>
       <options thread="1" xpskin="1" dpiaware="1" debug="1"/>
@@ -384,6 +386,7 @@
     <target name="Linux - 32-bit" enabled="1" default="0">
       <inputfile value="PureBasic.pb"/>
       <outputfile value="..\Build\x86\ide\PureBasic"/>
+      <commandline value="/NOEXT"/>
       <executable value="..\Build\x86\ide\PureBasic"/>
       <directory value="data\"/>
       <options thread="1" xpskin="1" dpiaware="1" debug="1"/>
@@ -400,6 +403,7 @@
     <target name="Linux - 64-bit" enabled="1" default="0">
       <inputfile value="PureBasic.pb"/>
       <outputfile value="..\Build\x64\ide\PureBasic"/>
+      <commandline value="/NOEXT"/>
       <executable value="..\Build\x64\ide\PureBasic"/>
       <directory value="data\"/>
       <options thread="1" xpskin="1" dpiaware="1" debug="1"/>
@@ -416,6 +420,7 @@
     <target name="MacOS - 32-bit" enabled="1" default="0">
       <inputfile value="PureBasic.pb"/>
       <outputfile value="..\Build\x86\ide\PureBasic.app"/>
+      <commandline value="/NOEXT"/>
       <executable value="..\Build\x86\ide\PureBasic.app"/>
       <directory value="data\"/>
       <options thread="1" xpskin="1" dpiaware="1" debug="1"/>
@@ -432,6 +437,7 @@
     <target name="MacOS - 64-bit" enabled="1" default="0">
       <inputfile value="PureBasic.pb"/>
       <outputfile value="..\Build\x64\ide\PureBasic.app"/>
+      <commandline value="/NOEXT"/>
       <executable value="..\Build\x64\ide\PureBasic.app"/>
       <directory value="data\"/>
       <options thread="1" xpskin="1" dpiaware="1" debug="1"/>
