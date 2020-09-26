@@ -5,6 +5,35 @@
 ;--------------------------------------------------------------------------------------------
 
 
+; Validate target OS against the current compiler OS
+CompilerSelect #PB_Compiler_OS
+  CompilerCase #PB_OS_Windows
+    CompilerIf Defined(BUILD_LINUX, #PB_Constant) Or Defined(BUILD_MACOS, #PB_Constant)
+      CompilerError "Non-Windows target"
+    CompilerEndIf
+  CompilerCase #PB_OS_Linux
+    CompilerIf Defined(BUILD_WINDOWS, #PB_Constant) Or Defined(BUILD_MACOS, #PB_Constant)
+      CompilerError "Non-Linux target"
+    CompilerEndIf
+  CompilerCase #PB_OS_MacOS
+    CompilerIf Defined(BUILD_WINDOWS, #PB_Constant) Or Defined(BUILD_LINUX, #PB_Constant)
+      CompilerError "Non-MacOS target"
+    CompilerEndIf
+CompilerEndSelect
+
+; Validate target processor against the current compiler processor
+CompilerSelect #PB_Compiler_Processor
+  CompilerCase #PB_Processor_x86
+    CompilerIf Defined(BUILD_X64, #PB_Constant)
+      CompilerError "Non-x86 target"
+    CompilerEndIf
+  CompilerCase #PB_Processor_x64
+    CompilerIf Defined(BUILD_X86, #PB_Constant)
+      CompilerError "Non-x64 target"
+    CompilerEndIf
+CompilerEndSelect
+
+
 
 ; this file should contain constant definitions only
 ; here, compiler switches are set, both for customizing the compilation
