@@ -1732,6 +1732,9 @@ Procedure MainMenuEvent(MenuItemID)
             GetSelection(@LineStart, 0, @LineEnd, 0)
             If LineStart = LineEnd ; normal tab
               SendEditorMessage(#SCI_TAB, 0, 0)
+              If EnableCaseCorrection And LimitCaseCorrection
+                Debug "AutoCaseLastWord"
+              EndIf
             Else
               InsertTab()
             EndIf

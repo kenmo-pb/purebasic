@@ -2961,6 +2961,13 @@ CompilerIf #CompileWindows | #CompileLinux | #CompileMac
         If *ActiveSource And EditorGadget = *ActiveSource\EditorGadget
           *ActiveSource\ModifiedSinceUpdate = 1 ; the source has been modified
           
+          If EnableCaseCorrection And LimitCaseCorrection
+            Select *scinotify\ch
+              Case ' ', #TAB, #CR, #LF
+                Debug "AutoCaseLastWord"
+            EndSelect
+          EndIf
+          
           ; With structure autocomplete, while typing a \, we can have one autocomplete to close
           ; and then directly re-open in structure mode for the structure, so handle this case
           If AutoCompleteWindowOpen
@@ -3143,6 +3150,9 @@ CompilerIf #CompileWindows | #CompileLinux | #CompileMac
               SendEditorMessage(#SCI_BACKTAB, 0, 0)
             Else
               SendEditorMessage(#SCI_TAB, 0, 0)
+              If EnableCaseCorrection And LimitCaseCorrection
+                Debug "AutoCaseLastWord"
+              EndIf
             EndIf
           Else
             If *Event\state & 1 ; shift key
@@ -3188,6 +3198,9 @@ CompilerIf #CompileWindows | #CompileLinux | #CompileMac
           GetSelection(@LineStart, 0, @LineEnd, 0)
           If LineStart = LineEnd  ; normal tab
             SendEditorMessage(#SCI_TAB, 0, 0)
+            If EnableCaseCorrection And LimitCaseCorrection
+              Debug "AutoCaseLastWord"
+            EndIf
           Else
             RemoveTab()
           EndIf
