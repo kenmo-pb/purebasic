@@ -798,6 +798,7 @@ DataSection
   ;Data$ "EnableColoring",   "Enable Syntax coloring"
   Data$ "EnableBolding",    "Enable bolding of Keywords"
   Data$ "EnableCase",       "Enable Case correction"
+  Data$ "LimitCase",        "Limit Case correction to last typed word"
   Data$ "EnableBraceMatch", "Enable marking of matching Braces"
   Data$ "EnableKeywordMatch","Enable marking of matching Keywords"
   Data$ "EnableLineNumbers","Display Line numbers"

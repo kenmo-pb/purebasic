@@ -347,6 +347,7 @@ Runtime Enumeration 1 ; 0 is reserved for uninitialized #PB_Any
   ;  #GADGET_Preferences_EnableColoring
   #GADGET_Preferences_EnableBolding
   #GADGET_Preferences_EnableCaseCorrection
+  #GADGET_Preferences_LimitCaseCorrection
   #GADGET_Preferences_EnableLineNumbers
   ;  #GADGET_Preferences_EnableMarkers
   #GADGET_Preferences_ExtraWordChars

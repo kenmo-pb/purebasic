@@ -1753,6 +1753,7 @@ Procedure IsPreferenceChanged()
   If CurrentLanguage$      <> GetGadgetText(#GADGET_Preferences_Languages): ProcedureReturn 1: EndIf
   ;  If EnableColoring        <> GetGadgetState(#GADGET_Preferences_EnableColoring): ProcedureReturn 1: EndIf
   If EnableCaseCorrection  <> GetGadgetState(#GADGET_Preferences_EnableCaseCorrection): ProcedureReturn 1: EndIf
+  If LimitCaseCorrection   <> GetGadgetState(#GADGET_Preferences_LimitCaseCorrection): ProcedureReturn 1: EndIf
   If EnableKeywordBolding  <> GetGadgetState(#GADGET_Preferences_EnableBolding): ProcedureReturn 1: EndIf
   If AutoSave              <> GetGadgetState(#GADGET_Preferences_AutoSave): ProcedureReturn 1: EndIf
   If AutoSaveAll           <> GetGadgetState(#GADGET_Preferences_AutoSaveAll): ProcedureReturn 1: EndIf
@@ -2117,6 +2118,7 @@ Procedure ApplyPreferences()
   MemorizeWindow        = GetGadgetState(#GADGET_Preferences_MemorizeWindow)
   ;  EnableColoring        = GetGadgetState(#GADGET_Preferences_EnableColoring)
   EnableCaseCorrection  = GetGadgetState(#GADGET_Preferences_EnableCaseCorrection)
+  LimitCaseCorrection   = GetGadgetState(#GADGET_Preferences_LimitCaseCorrection)
   EnableKeywordBolding  = GetGadgetState(#GADGET_Preferences_EnableBolding)
   AutoSave              = GetGadgetState(#GADGET_Preferences_AutoSave)
   AutoSaveAll           = GetGadgetState(#GADGET_Preferences_AutoSaveAll)
@@ -2911,6 +2913,7 @@ Procedure OpenPreferencesWindow()
   ;  SetGadgetState(#GADGET_Preferences_EnableColoring, EnableColoring)
   SetGadgetState(#GADGET_Preferences_EnableBolding, EnableKeywordBolding)
   SetGadgetState(#GADGET_Preferences_EnableCaseCorrection, EnableCaseCorrection)
+  SetGadgetState(#GADGET_Preferences_LimitCaseCorrection, LimitCaseCorrection)
   SetGadgetState(#GADGET_Preferences_EnableLineNumbers, EnableLineNumbers)
   ;  SetGadgetState(#GADGET_Preferences_EnableMarkers, EnableMarkers)
   SetGadgetState(#GADGET_Preferences_EnableBraceMatch, EnableBraceMatch)

@@ -282,6 +282,7 @@
               -->
               <checkbox id="#GADGET_Preferences_EnableBolding" lang="Preferences:EnableBolding" />
               <checkbox id="#GADGET_Preferences_EnableCaseCorrection" lang="Preferences:EnableCase" />
+              <checkbox id="#GADGET_Preferences_LimitCaseCorrection" lang="Preferences:LimitCase" />
               <compiler if="#CompileMacCarbon"> <!-- disabled on OSX due to flickering -->                    
                 <checkbox id="#GADGET_Preferences_EnableBraceMatch"   disabled="yes" lang="Preferences:EnableBraceMatch" />                    
               <compilerelse/>
