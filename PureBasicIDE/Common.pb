@@ -2437,6 +2437,7 @@ Global TemplatesFile$, SourcePathSet, UpdateCheckFile$
 Global EditorWindowX, EditorWindowY, EditorWindowWidth, EditorWindowHeight, IsWindowMaximized
 Global Memorize_EditorWidth, Memorize_EditorHeight, Save_EditorWidth, Save_EditorHeight, Save_EditorX, Save_EditorY
 Global AutoReload, MemorizeWindow, CurrentLanguage$, EnableColoring, EnableCaseCorrection, EnableKeywordBolding
+Global LimitCaseCorrection
 Global AutoSave, AutoSaveAll, Editor_RunOnce, ShowMainToolbar, TabLength, MemorizeCursor, VisualDesigner$
 Global ToolsPanelMode, ToolsPanelWidth, ToolsPanelSide, SplitterMoving, SplitterCursor, SelectedFilePattern
 Global FileViewerX, FileViewerY, FileViewerWidth, FileViewerHeight, FileViewerPattern, FileViewerMaximize

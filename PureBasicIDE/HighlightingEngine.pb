@@ -485,7 +485,12 @@ CompilerEndIf
 ; If *Source and *Target have same content: returns #False
 ; Otherwise, copy the memory and return #True
 Procedure CopyMemoryCheck(*Source.HighlightPTR, *Target.HighlightPTR, Length)
-
+  
+  ; If case correction is "limited", don't perform it here during highlighting
+  If LimitCaseCorrection
+    ProcedureReturn #False
+  EndIf
+  
   ; for a fast equal check, do it in integer blocks
   While Length >= SizeOf(Integer)
     If *Source\i <> *Target\i
