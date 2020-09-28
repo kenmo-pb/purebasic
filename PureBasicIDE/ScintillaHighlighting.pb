@@ -2963,8 +2963,8 @@ CompilerIf #CompileWindows | #CompileLinux | #CompileMac
           
           If EnableCaseCorrection And LimitCaseCorrection
             Select *scinotify\ch
-              Case ' ', #TAB, #CR, #LF
-                Debug "AutoCaseLastWord"
+              Case ' ', #TAB, #CR, #LF, '.', '\', '+', '-', '(', ')', '*', '/'
+                AutoCaseLastWord(*ActiveSource)
             EndSelect
           EndIf
           
@@ -3151,7 +3151,7 @@ CompilerIf #CompileWindows | #CompileLinux | #CompileMac
             Else
               SendEditorMessage(#SCI_TAB, 0, 0)
               If EnableCaseCorrection And LimitCaseCorrection
-                Debug "AutoCaseLastWord"
+                AutoCaseLastWord(*ActiveSource)
               EndIf
             EndIf
           Else
@@ -3199,7 +3199,7 @@ CompilerIf #CompileWindows | #CompileLinux | #CompileMac
           If LineStart = LineEnd  ; normal tab
             SendEditorMessage(#SCI_TAB, 0, 0)
             If EnableCaseCorrection And LimitCaseCorrection
-              Debug "AutoCaseLastWord"
+              AutoCaseLastWord(*ActiveSource)
             EndIf
           Else
             RemoveTab()

@@ -481,6 +481,89 @@ CompilerIf Defined(PUREBASIC_IDE, #PB_Constant)
 
 CompilerEndIf
 
+Procedure AutoCaseLastWord(*Source.SourceFile)
+  If *Source
+    ; Get last typed word
+    CurrentPos = ScintillaSendMessage(*Source\EditorGadget, #SCI_GETCURRENTPOS)
+    WordStart = ScintillaSendMessage(*Source\EditorGadget, #SCI_WORDSTARTPOSITION, CurrentPos - 2, #True)
+    WordEnd = ScintillaSendMessage(*Source\EditorGadget, #SCI_WORDENDPOSITION, CurrentPos - 2, #True)
+    If WordEnd > WordStart
+      
+      ; Get entire line because we'll need to parse it
+      Line = ScintillaSendMessage(*Source\EditorGadget, #SCI_LINEFROMPOSITION, CurrentPos - 2)
+      LineStart = ScintillaSendMessage(*Source\EditorGadget, #SCI_POSITIONFROMLINE, Line)
+      LineLen = ScintillaSendMessage(*Source\EditorGadget, #SCI_LINELENGTH, Line)
+      *LineBuffer = AllocateMemory(LineLen + 1)
+      If *LineBuffer
+        ScintillaSendMessage(*Source\EditorGadget, #SCI_GETLINE, Line, *LineBuffer)
+        
+        ; Ensure we're not in a comment or string
+        InComment = #False
+        InString = #False
+        InEscapedString = #False
+        PrevChar = #NUL
+        PrefixChar = #NUL
+        RelPos = WordStart - LineStart
+        Index = 0
+        While (Index < RelPos)
+          Char = PeekA(*LineBuffer + Index)
+          If (InString)
+            If (Char = '"')
+              If ((InEscapedString = #False) Or (PrevChar = '\'))
+                InString = #False
+              EndIf
+            EndIf
+          Else
+            Select (Char)
+              Case ';'
+                InComment = #True
+                Break
+              Case '"'
+                InString = #True
+                If (PrevChar = '~')
+                  InEscapedString = #True
+                Else
+                  InEscapedString = #False
+                EndIf
+            EndSelect
+            If (Char <> ' ') And (Char <> #TAB)
+              PrefixChar = Char
+            EndIf
+          EndIf
+          PrevChar = Char
+          Index + 1
+        Wend
+        
+        If (InComment = #False) And (InString = #False)
+          Word$ = PeekS(*LineBuffer + RelPos, WordEnd - WordStart, #PB_UTF8 | #PB_ByteLength)
+          ReplaceWord$ = ""
+          
+          ; Check all cases here
+          If IsCustomKeyword(Word$) And (PrefixChar <> '\')
+            ReplaceWord$ = CustomKeyword$
+          ElseIf IsBasicKeyword(Word$) And (PrefixChar <> '\')
+            ReplaceWord$ = BasicKeyword$
+          ;ElseIf IsAPIFunction(Word$)
+            ; ...
+          ;ElseIf IsBasicFunction(Word$)
+            ; ...
+          ElseIf *Source\EnableASM And IsASMKeyword(Word$)
+            ReplaceWord$ = ASMKeyword$
+          ; constants...
+          EndIf
+          
+          If (ReplaceWord$ <> "") And (Word$ <> ReplaceWord$)
+            ScintillaSendMessage(*Source\EditorGadget, #SCI_SETTARGETSTART, WordStart)
+            ScintillaSendMessage(*Source\EditorGadget, #SCI_SETTARGETEND, WordEnd)
+            PokeS(*LineBuffer, ReplaceWord$, -1, #PB_UTF8)
+            ScintillaSendMessage(*Source\EditorGadget, #SCI_REPLACETARGET, WordEnd - WordStart, *LineBuffer)
+          EndIf
+        EndIf
+        FreeMemory(*LineBuffer)
+      EndIf
+    EndIf
+  EndIf
+EndProcedure
 
 ; If *Source and *Target have same content: returns #False
 ; Otherwise, copy the memory and return #True
