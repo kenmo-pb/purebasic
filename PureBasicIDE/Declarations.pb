@@ -395,8 +395,11 @@ Declare InitSyntaxHighlighting()      ; initialize the highlighting
 Declare BuildCustomKeywordTable()     ; build the needed HT etc from the CustomKeywordList() list and file
 Declare HighlightingEngine(*InBuffer, InBufferLength, CursorPosition, *HighlightCallback, IsSourceCode) ; call the engine
 Declare IsCustomKeyword(Word$)
-Declare IsASMKeyword(Word$)
 Declare IsBasicKeyword(Word$, *LineStart = 0, *WordStart = 0)
+Declare IsBasicFunction(Word$)
+Declare IsAPIFunction(*Word, length)
+Declare IsASMKeyword(Word$)
+Declare IsKnownConstant(Word$)
 
 ;- HighlightingFunctions.pb
 ;

@@ -2963,7 +2963,9 @@ CompilerIf #CompileWindows | #CompileLinux | #CompileMac
           
           If EnableCaseCorrection And LimitCaseCorrection
             Select *scinotify\ch
-              Case ' ', #TAB, #CR, #LF, '.', '\', '+', '-', '(', ')', '*', '/'
+              Case 'a' To 'z', 'A' To 'Z', '0' To '9', '_', '$'
+                ; typed word chars
+              Default
                 AutoCaseLastWord(*ActiveSource)
             EndSelect
           EndIf

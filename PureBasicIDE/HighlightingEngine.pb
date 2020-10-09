@@ -377,6 +377,9 @@ Structure FunctionEntry
   AsciiBuffer.a[256] ; name in ascii for highlighting engine (which is ascii only)
 EndStructure
 
+Global Dim APIFunctions.FunctionEntry(0)
+Global Dim BasicFunctions.FunctionEntry(0)
+
 Structure HighlightPTR
   StructureUnion
     a.a[0]
@@ -539,17 +542,24 @@ Procedure AutoCaseLastWord(*Source.SourceFile)
           ReplaceWord$ = ""
           
           ; Check all cases here
-          If IsCustomKeyword(Word$) And (PrefixChar <> '\')
+          If (PrefixChar <> '\') And IsCustomKeyword(Word$)
             ReplaceWord$ = CustomKeyword$
-          ElseIf IsBasicKeyword(Word$) And (PrefixChar <> '\')
+          ElseIf (PrefixChar <> '\') And IsBasicKeyword(Word$)
             ReplaceWord$ = BasicKeyword$
-          ;ElseIf IsAPIFunction(Word$)
-            ; ...
-          ;ElseIf IsBasicFunction(Word$)
-            ; ...
-          ElseIf *Source\EnableASM And IsASMKeyword(Word$)
-            ReplaceWord$ = ASMKeyword$
-          ; constants...
+          Else
+            FunctionPosition = IsAPIFunction(ToAscii(Word$), Len(Word$))
+            If (FunctionPosition > -1)
+              ReplaceWord$ = APIFunctions(FunctionPosition)\Name$ + "_"
+            Else
+              FunctionPosition = IsBasicFunction(UCase(Word$))
+              If (PrefixChar <> '.') And (FunctionPosition > -1)
+                ReplaceWord$ = BasicFunctions(FunctionPosition)\Name$
+              ElseIf *Source\EnableASM And IsASMKeyword(Word$)
+                ReplaceWord$ = ASMKeyword$
+              ElseIf IsKnownConstant(Word$)
+                ReplaceWord$ = KnownConstant$
+              EndIf
+            EndIf
           EndIf
           
           If (ReplaceWord$ <> "") And (Word$ <> ReplaceWord$)
@@ -1291,12 +1301,18 @@ Procedure HighlightingEngine(*InBuffer, InBufferLength, CursorPosition, Callback
         SeparatorChar = *Cursor\a
       EndIf
     EndIf
+    
+    If LimitCaseCorrection
+      AutoCaseWhileHighlighting = #False
+    Else
+      AutoCaseWhileHighlighting = EnableCaseCorrection
+    EndIf
 
     ; Custom keywords get priority even over PB ones so you can re-color some of them if you want
     If IsCustomKeyword(WordStart$) And OldSeparatorChar <> '\'
 
       ; -------------------- Custom Keyword -------------------------
-      If EnableCaseCorrection And (CursorPosition = 0 Or CursorPosition < *WordStart-*InBuffer Or CursorPosition > *WordEnd-*InBuffer)
+      If AutoCaseWhileHighlighting And (CursorPosition = 0 Or CursorPosition < *WordStart-*InBuffer Or CursorPosition > *WordEnd-*InBuffer)
         TextChanged = CopyMemoryCheck(ToAscii(CustomKeyword$), *WordStart, Len(CustomKeyword$)) ; no PokeS() as it will write a 0!
       Else
         TextChanged = 0
@@ -1324,7 +1340,7 @@ Procedure HighlightingEngine(*InBuffer, InBufferLength, CursorPosition, Callback
       ; -------------------- Basic Keywords -------------------------
 
       ; do not correct the word the user is currently typing, because it will change the case of any word that starts with a PB keyword, which is not good
-      If EnableCaseCorrection And (CursorPosition = 0 Or CursorPosition < *WordStart-*InBuffer Or CursorPosition > *WordEnd-*InBuffer)
+      If AutoCaseWhileHighlighting And (CursorPosition = 0 Or CursorPosition < *WordStart-*InBuffer Or CursorPosition > *WordEnd-*InBuffer)
         TextChanged = CopyMemoryCheck(ToAscii(BasicKeyword$), *WordStart, Len(BasicKeyword$)) ; no PokeS() as it will write a 0!
       Else
         TextChanged = 0
@@ -1368,7 +1384,7 @@ Procedure HighlightingEngine(*InBuffer, InBufferLength, CursorPosition, Callback
       FunctionPosition = IsAPIFunction(*WordStart, WordLength)
       If FunctionPosition > -1
 
-        If EnableCaseCorrection
+        If AutoCaseWhileHighlighting
           TextChanged = CopyMemoryCheck(APIFunctions(FunctionPosition)\Ascii, *WordStart, WordLength-1)
         EndIf
 
@@ -1376,7 +1392,7 @@ Procedure HighlightingEngine(*InBuffer, InBufferLength, CursorPosition, Callback
         FunctionPosition = IsBasicFunction(UCase(WordStart$))
         If FunctionPosition > -1
 
-          If EnableCaseCorrection And OldSeparatorChar <> '.' ; do not correct structure names
+          If AutoCaseWhileHighlighting And OldSeparatorChar <> '.' ; do not correct structure names
             TextChanged = CopyMemoryCheck(BasicFunctions(FunctionPosition)\Ascii, *WordStart, WordLength)
           EndIf
 
@@ -1414,7 +1430,7 @@ Procedure HighlightingEngine(*InBuffer, InBufferLength, CursorPosition, Callback
       ; -------------------- ASM Keywords ---------------------------
 
       ; do not correct the word the user is currently typing, because it will change the case of any word that starts with a PB keyword, which is not good
-      If EnableCaseCorrection And (CursorPosition = 0 Or CursorPosition < *WordStart-*InBuffer Or CursorPosition > *WordEnd-*InBuffer)
+      If AutoCaseWhileHighlighting And (CursorPosition = 0 Or CursorPosition < *WordStart-*InBuffer Or CursorPosition > *WordEnd-*InBuffer)
         TextChanged = CopyMemoryCheck(ToAscii(ASMKeyword$), *WordStart, WordLength) ; no PokeS() as it will write a 0!
         Callback(*StringStart, *Cursor-*StringStart, *ASMKeywordColor, 0, TextChanged)
       Else
@@ -1691,7 +1707,7 @@ Procedure HighlightingEngine(*InBuffer, InBufferLength, CursorPosition, Callback
         EndIf
 
         ; also do not correct case here if the cursor is over the word
-        If EnableCaseCorrection And ConstantListSize > 0 And *Cursor > *StringStart + 1 And IsKnownConstant(PeekAsciiLength(*StringStart, *Cursor-*StringStart)) And (CursorPosition = 0 Or CursorPosition < *StringStart-*InBuffer Or CursorPosition > *Cursor-*InBuffer)
+        If AutoCaseWhileHighlighting And ConstantListSize > 0 And *Cursor > *StringStart + 1 And IsKnownConstant(PeekAsciiLength(*StringStart, *Cursor-*StringStart)) And (CursorPosition = 0 Or CursorPosition < *StringStart-*InBuffer Or CursorPosition > *Cursor-*InBuffer)
           TextChanged = CopyMemoryCheck(ToAscii(KnownConstant$), *StringStart, Len(KnownConstant$))
           Callback(*StringStart, *Cursor-*StringStart, *ConstantColor, 0, TextChanged) ; don't include the current char!
         Else
