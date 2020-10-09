@@ -2966,7 +2966,7 @@ CompilerIf #CompileWindows | #CompileLinux | #CompileMac
               Case 'a' To 'z', 'A' To 'Z', '0' To '9', '_', '$'
                 ; typed word chars
               Default
-                AutoCaseLastWord(*ActiveSource)
+                CaseCorrectLastWord(*ActiveSource)
             EndSelect
           EndIf
           
@@ -3153,7 +3153,7 @@ CompilerIf #CompileWindows | #CompileLinux | #CompileMac
             Else
               SendEditorMessage(#SCI_TAB, 0, 0)
               If EnableCaseCorrection And LimitCaseCorrection
-                AutoCaseLastWord(*ActiveSource)
+                CaseCorrectLastWord(*ActiveSource)
               EndIf
             EndIf
           Else
@@ -3201,7 +3201,7 @@ CompilerIf #CompileWindows | #CompileLinux | #CompileMac
           If LineStart = LineEnd  ; normal tab
             SendEditorMessage(#SCI_TAB, 0, 0)
             If EnableCaseCorrection And LimitCaseCorrection
-              AutoCaseLastWord(*ActiveSource)
+              CaseCorrectLastWord(*ActiveSource)
             EndIf
           Else
             RemoveTab()

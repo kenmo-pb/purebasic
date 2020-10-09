@@ -1733,7 +1733,7 @@ Procedure MainMenuEvent(MenuItemID)
             If LineStart = LineEnd ; normal tab
               SendEditorMessage(#SCI_TAB, 0, 0)
               If EnableCaseCorrection And LimitCaseCorrection
-                AutoCaseLastWord(*ActiveSource)
+                CaseCorrectLastWord(*ActiveSource)
               EndIf
             Else
               InsertTab()
