@@ -60,7 +60,10 @@ Procedure OpenAboutWindow()
               "Scintilla © 1998-2020 Neil Hodgson <neilh@scintilla.org> " + #NewLine +
               #NewLine +
               "Thanks to Wimer Hazenberg for Monokai color palette." + #NewLine +
-              "http://www.monokai.nl/"
+              "http://www.monokai.nl/" + #NewLine +
+              #NewLine +
+              "Thanks to Ethan Schoonover for Solarized color palettes." + #NewLine +
+              "https://ethanschoonover.com/solarized/"
       
       ; For better debugging
       ;

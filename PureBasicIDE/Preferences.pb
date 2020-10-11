@@ -5407,7 +5407,7 @@ DataSection
   
   CompilerIf #SpiderBasic
     
-    Data.l 10
+    Data.l 12
     
     ; now each color scheme. first the name string, then the front & backcolor
     ; for the toolspanel, then all the colors
@@ -5458,7 +5458,7 @@ DataSection
   CompilerElse
     
     ; total number of defined schemes:
-    Data.l 9
+    Data.l 11
     
   CompilerEndIf
   
@@ -5678,6 +5678,92 @@ DataSection
   Data.l $2EE2A6 ; #COLOR_Module
   Data.l $464646 ; #COLOR_SelectionRepeat
   Data.l $222827 ; #COLOR_PlainBackground
+  
+  ; Based on the Solarized Light color scheme, copyright by Ethan Schoonover (https://ethanschoonover.com/solarized/)
+  Data$ "Solarized (Light)"
+  Data.l $837B65 ;  ToolsPanelFrontColor
+  Data.l $E3F6FD ;  ToolsPanelBackColor
+  Data.l $C4716C ; #COLOR_ASMKeyword
+  Data.l $E3F6FD ; #COLOR_GlobalBackground
+  Data.l $0089B5 ; #COLOR_BasicKeyword
+  Data.l $A1A193 ; #COLOR_Comment
+  Data.l $164BCB ; #COLOR_Constant
+  Data.l $8236D3 ; #COLOR_Label
+  Data.l $837B65 ; #COLOR_NormalText
+  Data.l $98A12A ; #COLOR_Number
+  Data.l $837B65 ; #COLOR_Operator
+  Data.l $756E58 ; #COLOR_Pointer
+  Data.l $D28B26 ; #COLOR_PureKeyword
+  Data.l $837B65 ; #COLOR_Separator
+  Data.l $98A12A ; #COLOR_String
+  Data.l $837B65 ; #COLOR_Structure
+  Data.l $837B65 ; #COLOR_LineNumber
+  Data.l $D5E8EE ; #COLOR_LineNumberBack
+  Data.l $837B65 ; #COLOR_Marker
+  Data.l $D5E8EE ; #COLOR_CurrentLine
+  Data.l $362B00 ; #COLOR_Selection
+  Data.l $A1A193 ; #COLOR_SelectionFront
+  Data.l $837B65 ; #COLOR_Cursor
+  Data.l $D5E8EE ; #COLOR_DebuggerLine
+  Data.l $8236D3 ; #COLOR_DebuggerLineSymbol
+  Data.l $D5E8EE ; #COLOR_DebuggerError
+  Data.l $2F32DC ; #COLOR_DebuggerErrorSymbol
+  Data.l $D5E8EE ; #COLOR_DebuggerBreakPoint
+  Data.l $D28B26 ; #COLOR_DebuggerBreakpointSymbol
+  Data.l $E3F6FD ; #COLOR_DisabledBack
+  Data.l $756E58 ; #COLOR_GoodBrace
+  Data.l $2F32DC ; #COLOR_BadBrace
+  Data.l $E3F6FD ; #COLOR_ProcedureBack
+  Data.l $837B65 ; #COLOR_CustomKeyword
+  Data.l $D5E8EE ; #COLOR_DebuggerWarning
+  Data.l $0089B5 ; #COLOR_DebuggerWarningSymbol
+  Data.l $2F32DC ; #COLOR_Whitespace
+  Data.l $164BCB ; #COLOR_Module
+  Data.l $D5E8EE ; #COLOR_SelectionRepeat
+  Data.l $E3F6FD ; #COLOR_PlainBackground
+  
+  ; Based on the Solarized Dark color scheme, copyright by Ethan Schoonover (https://ethanschoonover.com/solarized/)
+  Data$ "Solarized (Dark)"
+  Data.l $969483 ;  ToolsPanelFrontColor
+  Data.l $362B00 ;  ToolsPanelBackColor
+  Data.l $C4716C ; #COLOR_ASMKeyword
+  Data.l $362B00 ; #COLOR_GlobalBackground
+  Data.l $0089B5 ; #COLOR_BasicKeyword
+  Data.l $756E58 ; #COLOR_Comment
+  Data.l $164BCB ; #COLOR_Constant
+  Data.l $8236D3 ; #COLOR_Label
+  Data.l $969483 ; #COLOR_NormalText
+  Data.l $98A12A ; #COLOR_Number
+  Data.l $969483 ; #COLOR_Operator
+  Data.l $A1A193 ; #COLOR_Pointer
+  Data.l $D28B26 ; #COLOR_PureKeyword
+  Data.l $969483 ; #COLOR_Separator
+  Data.l $98A12A ; #COLOR_String
+  Data.l $969483 ; #COLOR_Structure
+  Data.l $969483 ; #COLOR_LineNumber
+  Data.l $423607 ; #COLOR_LineNumberBack
+  Data.l $969483 ; #COLOR_Marker
+  Data.l $423607 ; #COLOR_CurrentLine
+  Data.l $E3F6FD ; #COLOR_Selection
+  Data.l $756E58 ; #COLOR_SelectionFront
+  Data.l $969483 ; #COLOR_Cursor
+  Data.l $423607 ; #COLOR_DebuggerLine
+  Data.l $8236D3 ; #COLOR_DebuggerLineSymbol
+  Data.l $423607 ; #COLOR_DebuggerError
+  Data.l $2F32DC ; #COLOR_DebuggerErrorSymbol
+  Data.l $423607 ; #COLOR_DebuggerBreakPoint
+  Data.l $D28B26 ; #COLOR_DebuggerBreakpointSymbol
+  Data.l $362B00 ; #COLOR_DisabledBack
+  Data.l $A1A193 ; #COLOR_GoodBrace
+  Data.l $2F32DC ; #COLOR_BadBrace
+  Data.l $362B00 ; #COLOR_ProcedureBack
+  Data.l $969483 ; #COLOR_CustomKeyword
+  Data.l $423607 ; #COLOR_DebuggerWarning
+  Data.l $0089B5 ; #COLOR_DebuggerWarningSymbol
+  Data.l $2F32DC ; #COLOR_Whitespace
+  Data.l $164BCB ; #COLOR_Module
+  Data.l $423607 ; #COLOR_SelectionRepeat
+  Data.l $362B00 ; #COLOR_PlainBackground
   
   Data$ "Blue Style"
   Data.l $80FFFF ;  ToolsPanelFrontColor

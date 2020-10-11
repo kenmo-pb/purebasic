@@ -27,6 +27,7 @@ Welcome to __PureBasic OpenSources Projects__, a central public repository to ac
 - [Credits](#credits)
     - [Libmba](#libmba)
     - [Monokai Theme](#monokai-theme)
+    - [Solarized Themes](#solarized-themes)
     - [Silk Icon Set](#silk-icon-set)
 - [Acknowledgements](#acknowledgements)
 - [License](#license)
@@ -133,6 +134,16 @@ The PureBasic IDE uses the Monokai color scheme, created by [Wimer Hazenberg].
     Monokai, copyright by Wimer Hazenberg (https://monokai.nl)
 
 The Monokai scheme is free to use provided that the above copyright notice and link to the author website are included in any work using the scheme.
+
+## Solarized Themes
+
+- [`PureBasicIDE/Preferences.pb`][SolarizedThemes]
+
+The PureBasic IDE uses the Solarized Light and Dark color schemes, created by [Ethan Schoonover].
+
+    Solarized, copyright by Ethan Schoonover (https://github.com/altercation/solarized)
+
+The Solarized scheme is free to use provided that the above copyright notice and link to the author website are included in any work using the scheme.
 
 ## Silk Icon Set
 
@@ -244,6 +255,7 @@ work in the PureBasic package.
 [Fantaisie License]: ./LICENSE-FANTAISIE "The Fantaisie Software License"
 [CONTRIBUTING.md]: ./CONTRIBUTING.md "Contributors' Guidelines"
 [MonokaiTheme]: ./PureBasicIDE/Preferences.pb#L5621 "View the source file containing the Monokai color scheme"
+[SolarizedThemes]: ./PureBasicIDE/Preferences.pb "View the source file containing the Solarized color schemes"
 
 <!-- project folders -->
 
@@ -261,5 +273,6 @@ work in the PureBasic package.
 [Mark James]: https://twitter.com/markjames "Visit Mark James's profile on Twitter"
 [Timo «Freak» Harter]: https://github.com/t-harter "View Timo «Freak» Harter's GitHub profile"
 [Wimer Hazenberg]: https://www.monokai.nl/ "Visit Wimer Hazenberg's website"
+[Ethan Schoonover]: https://ethanschoonover.com/ "Visit Ethan Schoonover's website"
 
 <!-- EOF -->
