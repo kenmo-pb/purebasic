@@ -31,6 +31,7 @@ Procedure CreateIDEMenu()
     ShortcutMenuItem(#MENU_Save  , Language("MenuItem","Save"))
     ShortcutMenuItem(#MENU_SaveAs, Language("MenuItem","SaveAs"))
     ShortcutMenuItem(#MENU_SaveAll, Language("MenuItem","SaveAll"))
+    ShortcutMenuItem(#MENU_RenameFile, Language("MenuItem","RenameFile"))
     ShortcutMenuItem(#MENU_Reload, Language("MenuItem","Reload"))
     ShortcutMenuItem(#MENU_Close , Language("MenuItem","Close"))
     ShortcutMenuItem(#MENU_CloseAll, Language("MenuItem","CloseAll"))
@@ -884,6 +885,7 @@ Procedure UpdateMenuStates()
     If *ActiveSource = *ProjectInfo
       NoRealSource = 1
       DisableMenuAndToolbarItem(#MENU_DiffCurrent, 1)
+      DisableMenuAndToolbarItem(#MENU_RenameFile, 1)
     Else
       NoRealSource = 0
       
@@ -892,6 +894,11 @@ Procedure UpdateMenuStates()
       Else
         ; this cannot be done if the current source is not saved yet
         DisableMenuAndToolbarItem(#MENU_DiffCurrent, 1)
+      EndIf
+      If *ActiveSource\FileName$
+        DisableMenuAndToolbarItem(#MENU_RenameFile, 0)
+      Else
+        DisableMenuAndToolbarItem(#MENU_RenameFile, 1)
       EndIf
     EndIf
     
@@ -1038,6 +1045,9 @@ Procedure MainMenuEvent(MenuItemID)
       
     Case #MENU_SaveAs
       SaveSourceAs()
+      
+    Case #MENU_RenameFile
+      RenameFileAs()
       
     Case #MENU_Reload
       ReloadSource()

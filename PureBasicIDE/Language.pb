@@ -399,6 +399,7 @@ DataSection
   Data$ "Save",             "&Save"
   Data$ "SaveAs",           "Save &As..."
   Data$ "SaveAll",          "Sa&ve All"
+  Data$ "RenameFile",       "Rena&me..."
   Data$ "Reload",           "R&eload"
   Data$ "Close",            "&Close"
   Data$ "CloseAll",         "C&lose All"
