@@ -31,6 +31,7 @@ Procedure CreateIDEMenu()
     ShortcutMenuItem(#MENU_Save  , Language("MenuItem","Save"))
     ShortcutMenuItem(#MENU_SaveAs, Language("MenuItem","SaveAs"))
     ShortcutMenuItem(#MENU_SaveAll, Language("MenuItem","SaveAll"))
+    ShortcutMenuItem(#MENU_RenameFile, Language("MenuItem","RenameFile"))
     ShortcutMenuItem(#MENU_Reload, Language("MenuItem","Reload"))
     ShortcutMenuItem(#MENU_Close , Language("MenuItem","Close"))
     ShortcutMenuItem(#MENU_CloseAll, Language("MenuItem","CloseAll"))
@@ -387,6 +388,7 @@ Procedure CreateIDEPopupMenu()
       ShortcutMenuItem(#MENU_Save, Language("MenuItem","Save"))
       ShortcutMenuItem(#MENU_SaveAs, Language("MenuItem","SaveAs"))
       ShortcutMenuItem(#MENU_SaveAll, Language("MenuItem","SaveAll"))
+      ShortcutMenuItem(#MENU_RenameFile, Language("MenuItem","RenameFile"))
       MenuBar()
       ShortcutMenuItem(#MENU_Reload, Language("MenuItem","Reload"))
       MenuBar()
@@ -883,8 +885,22 @@ Procedure UpdateMenuStates()
     ;
     If *ActiveSource = *ProjectInfo
       NoRealSource = 1
+      DisableMenuAndToolbarItem(#MENU_DiffCurrent, 1)
+      DisableMenuAndToolbarItem(#MENU_RenameFile, 1)
     Else
       NoRealSource = 0
+      
+      If *ActiveSource\FileName$ And GetSourceModified()
+        DisableMenuAndToolbarItem(#MENU_DiffCurrent, 0)
+      Else
+        ; this cannot be done if the current source is not saved yet
+        DisableMenuAndToolbarItem(#MENU_DiffCurrent, 1)
+      EndIf
+      If *ActiveSource\FileName$
+        DisableMenuAndToolbarItem(#MENU_RenameFile, 0)
+      Else
+        DisableMenuAndToolbarItem(#MENU_RenameFile, 1)
+      EndIf
     EndIf
     
     ; File menu
@@ -1033,6 +1049,9 @@ Procedure MainMenuEvent(MenuItemID)
       
     Case #MENU_SaveAs
       SaveSourceAs()
+      
+    Case #MENU_RenameFile
+      RenameFileAs()
       
     Case #MENU_Reload
       ReloadSource()
@@ -1998,6 +2017,9 @@ Procedure MainWindowEvents(EventID)
               
               ; Disable the Reload item if new source, project info tab, or form
               DisableMenuItem(#POPUPMENU_TabBar, #MENU_Reload, Bool( (*ActiveSource\FileName$ = "") Or (*ActiveSource = *ProjectInfo) Or (*ActiveSource\IsForm) ))
+              
+              ; Disable the Rename item if project tab or New source
+              DisableMenuItem(#POPUPMENU_TabBar, #MENU_RenameFile, Bool(*ActiveSource = *ProjectInfo Or *ActiveSource\FileName$ = ""))
               
               ; Display the TabBar popup menu
               DisplayPopupMenu(#POPUPMENU_TabBar, WindowID(#WINDOW_Main))

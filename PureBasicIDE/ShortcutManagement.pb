@@ -792,6 +792,7 @@ DataSection
   Data$ "File", "Save":          Data.l #SHORTCUT_Save
   Data$ "File", "SaveAs":        Data.l 0
   Data$ "File", "SaveAll":       Data.l 0
+  Data$ "File", "RenameFile":    Data.l 0
   Data$ "File", "Reload":        Data.l 0
   Data$ "File", "Close":         Data.l #SHORTCUT_Close
   Data$ "File", "CloseAll":      Data.l 0

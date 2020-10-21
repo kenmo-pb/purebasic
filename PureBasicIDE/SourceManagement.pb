@@ -2233,8 +2233,10 @@ Procedure SaveSourceAs()
     ;
     If ForceFileCheck Or #CompileMacCocoa = 0
       If FileSize(FileName$) > -1  ; file exist check
-        If MessageRequester(#ProductName$, Language("FileStuff","FileExists")+#NewLine+Language("FileStuff","OverWrite"), #PB_MessageRequester_YesNo|#FLAG_Warning) = #PB_MessageRequester_No
-          ProcedureReturn SaveSourceAs()  ; try again
+        If Not IsEqualFile(FileName$, *ActiveSource\FileName$)
+          If MessageRequester(#ProductName$, Language("FileStuff","FileExists")+#NewLine+Language("FileStuff","OverWrite"), #PB_MessageRequester_YesNo|#FLAG_Warning) = #PB_MessageRequester_No
+            ProcedureReturn SaveSourceAs()  ; try again
+          EndIf
         EndIf
       EndIf
     EndIf
@@ -2254,6 +2256,59 @@ Procedure SaveSourceAs()
     ProcedureReturn -1 ; indicate user abort (needed when called by CheckSourceSaved())
   EndIf
   
+EndProcedure
+
+Procedure RenameFileAs()
+  If *ActiveSource
+    If *ActiveSource <> *ProjectInfo
+      If *ActiveSource\FileName$
+        OldPath$ = *ActiveSource\FileName$
+        If SaveSourceAs() = 1
+          If *ActiveSource\FileName$ <> OldPath$
+            If Not IsEqualFile(*ActiveSource\FileName$, OldPath$)
+              DeleteFile(OldPath$)
+            EndIf
+            
+            ; Perform some automatic updates if the renamed file affect the current project
+            If IsProject And *ActiveSource\ProjectFile
+              If IsWindow(#WINDOW_ProjectOptions)
+                ProjectOptionsEvents(#PB_Event_CloseWindow)
+              EndIf
+              If IsWindow(#WINDOW_Option)
+                If *ActiveSource\ProjectFile
+                  OptionWindowEvents(#PB_Event_CloseWindow)
+                EndIf
+              EndIf
+              
+              OldRelative$ = CreateRelativePath(GetPathPart(ProjectFile$), OldPath$)
+              NewRelative$ = CreateRelativePath(GetPathPart(ProjectFile$), *ActiveSource\FileName$)
+              
+              ForEach ProjectFiles()
+                If IsEqualFile(ProjectFiles()\FileName$, OldPath$)
+                  last = CountGadgetItems(#GADGET_ProjectInfo_Files)
+                  For i = 0 To last
+                    If GetGadgetItemData(#GADGET_ProjectInfo_Files, i) = @ProjectFiles()
+                      SetGadgetItemText(#GADGET_ProjectInfo_Files, i, NewRelative$, 0)
+                      Break
+                    EndIf
+                  Next i
+                  ProjectFiles()\FileName$ = *ActiveSource\FileName$
+                  Break
+                EndIf
+              Next
+              
+              ForEach ProjectTargets()
+                If IsEqualFile(ProjectTargets()\MainFile$, OldRelative$)
+                  ProjectTargets()\MainFile$ = NewRelative$
+                EndIf
+              Next
+            EndIf
+            
+          EndIf
+        EndIf
+      EndIf
+    EndIf
+  EndIf
 EndProcedure
 
 Procedure SaveSource()

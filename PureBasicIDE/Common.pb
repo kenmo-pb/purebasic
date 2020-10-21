@@ -925,6 +925,7 @@ Enumeration 0
   #MENU_Save
   #MENU_SaveAs
   #MENU_SaveAll
+  #MENU_RenameFile
   #MENU_Reload
   #MENU_Close
   #MENU_CloseAll
