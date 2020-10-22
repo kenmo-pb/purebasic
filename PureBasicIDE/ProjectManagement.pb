@@ -367,6 +367,21 @@ Procedure UpdateProjectFile(*File.ProjectFile)
   
 EndProcedure
 
+Procedure ProjectContainsFile(AbsolutePath$)
+  Found = #False
+  If IsProject And AbsolutePath$ <> ""
+    PushListPosition(ProjectFiles())
+    ForEach ProjectFiles()
+      If IsEqualFile(ProjectFiles()\FileName$, AbsolutePath$)
+        Found = #True
+        Break
+      EndIf
+    Next
+    PopListPosition(ProjectFiles())
+  EndIf
+  ProcedureReturn Found
+EndProcedure
+
 ; Sets the default target from the target list, creating it if there is none
 ;
 Procedure SetProjectDefaultTarget()
@@ -939,29 +954,32 @@ Procedure LoadProject(Filename$)
         
         While *File
           If XMLNodeType(*File) = #PB_XML_Normal And GetXMLNodeName(*File) = "file"
-            AddElement(ProjectFiles())
-            ProjectFiles()\Filename$ = ResolveRelativePath(BasePath$, Xml_SingleLine(GetXMLAttribute(*File, "name")))
-            
-            *Config = XMLNodeFromPath(*File, "config")
-            If *Config
-              ProjectFiles()\AutoLoad    = Xml_Boolean(GetXMLAttribute(*Config, "load"))
-              ProjectFiles()\AutoScan    = Xml_Boolean(GetXMLAttribute(*Config, "scan"))
-              ProjectFiles()\ShowPanel   = Xml_Boolean(GetXMLAttribute(*Config, "panel"))
-              ProjectFiles()\ShowWarning = Xml_Boolean(GetXMLAttribute(*Config, "warn"))
-              ProjectFiles()\LastOpen    = Xml_Boolean(GetXMLAttribute(*Config, "lastopen"))
-              ProjectFiles()\PanelState$ = Xml_SingleLine(GetXMLAttribute(*Config, "panelstate")) ; the default for this is "all open", so need no backward compatibility here
-            Else
-              ProjectFiles()\AutoLoad    = 0
-              ProjectFiles()\AutoScan    = IsCodeFile(ProjectFiles()\Filename$)
-              ProjectFiles()\ShowPanel   = 1
-              ProjectFiles()\ShowWarning = 1
-              ProjectFiles()\LastOpen    = 0
-              ProjectFiles()\PanelState$ = ""
-            EndIf
-            
-            *Fingerprint = XMLNodeFromPath(*File, "fingerprint")
-            If *Fingerprint
-              ProjectFiles()\Md5$ = LCase(Xml_SingleLine(GetXMLAttribute(*Fingerprint, "md5")))
+            AbsolutePath$ = ResolveRelativePath(BasePath$, Xml_SingleLine(GetXMLAttribute(*File, "name")))
+            If Not ProjectContainsFile(AbsolutePath$)
+              AddElement(ProjectFiles())
+              ProjectFiles()\Filename$ = AbsolutePath$
+              
+              *Config = XMLNodeFromPath(*File, "config")
+              If *Config
+                ProjectFiles()\AutoLoad    = Xml_Boolean(GetXMLAttribute(*Config, "load"))
+                ProjectFiles()\AutoScan    = Xml_Boolean(GetXMLAttribute(*Config, "scan"))
+                ProjectFiles()\ShowPanel   = Xml_Boolean(GetXMLAttribute(*Config, "panel"))
+                ProjectFiles()\ShowWarning = Xml_Boolean(GetXMLAttribute(*Config, "warn"))
+                ProjectFiles()\LastOpen    = Xml_Boolean(GetXMLAttribute(*Config, "lastopen"))
+                ProjectFiles()\PanelState$ = Xml_SingleLine(GetXMLAttribute(*Config, "panelstate")) ; the default for this is "all open", so need no backward compatibility here
+              Else
+                ProjectFiles()\AutoLoad    = 0
+                ProjectFiles()\AutoScan    = IsCodeFile(ProjectFiles()\Filename$)
+                ProjectFiles()\ShowPanel   = 1
+                ProjectFiles()\ShowWarning = 1
+                ProjectFiles()\LastOpen    = 0
+                ProjectFiles()\PanelState$ = ""
+              EndIf
+              
+              *Fingerprint = XMLNodeFromPath(*File, "fingerprint")
+              If *Fingerprint
+                ProjectFiles()\Md5$ = LCase(Xml_SingleLine(GetXMLAttribute(*Fingerprint, "md5")))
+              EndIf
             EndIf
           EndIf
           
