@@ -1300,6 +1300,7 @@ Procedure ColorPicker_CreateFunction(*Entry.ColorPickerData, PanelItemID)
   ComboBoxGadget(#GADGET_Color_Scheme, 0, 0, 0, 0)
   ScrollBarGadget(#GADGET_Color_Scroll, 0, 0, 0, 0, 0, 100, 10, #PB_ScrollBar_Vertical)
   StringGadget(#GADGET_Color_Filter, 0, 0, 0, 0, "")
+  EnableCtrlBackspace(#GADGET_Color_Filter)
   
   CompilerIf #CompileWindows
     ScrollBarOldCallback = SetWindowLongPtr_(GetParent_(GadgetID(#GADGET_Color_Scroll)), #GWL_WNDPROC, @ColorPicker_ScrollbarCallback())
@@ -1320,8 +1321,10 @@ Procedure ColorPicker_CreateFunction(*Entry.ColorPickerData, PanelItemID)
   
   For Gadget = #GADGET_Color_Input0 To #GADGET_Color_Input6
     StringGadget(Gadget, 0, 0, 0, 0, "", #PB_String_Numeric)
+    EnableCtrlBackspace(Gadget)
   Next Gadget
   StringGadget(#GADGET_Color_Hex, 0, 0, 0, 0, "") ; for hex input
+  EnableCtrlBackspace(#GADGET_Color_Hex)
   
   ButtonGadget(#GADGET_Color_Insert, 0, 0, 0, 0,    Language("ToolsPanel", "Color_Insert"))
   ButtonGadget(#GADGET_Color_InsertRGB, 0, 0, 0, 0, Language("ToolsPanel", "Color_RGB"))

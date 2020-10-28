@@ -85,6 +85,13 @@ Procedure DlgGadget_New(*StaticData.DialogObjectData)
         
       Case #DIALOG_String
         *THIS\Gadget = StringGadget(*StaticData\Gadget, 0, 0, 0, 0, DialogObjectText(*StaticData), *StaticData\Flags)
+        CompilerIf Defined(EnableCtrlBackspace, #PB_Procedure)
+          If *StaticData\Gadget = #PB_Any
+            EnableCtrlBackspace(*THIS\Gadget)
+          Else
+            EnableCtrlBackspace(*StaticData\Gadget)
+          EndIf
+        CompilerEndIf
         
       Case #DIALOG_ShortcutGadget
         *THIS\Gadget = ShortcutGadget(*StaticData\Gadget, 0, 0, 0, 0, 0)
@@ -124,6 +131,15 @@ Procedure DlgGadget_New(*StaticData.DialogObjectData)
       Case #DIALOG_ComboBox
         *THIS\Gadget = ComboBoxGadget(*StaticData\Gadget, 0, 0, 0, 0, *StaticData\Flags)
         *THIS\HasTitle = #False
+        CompilerIf Defined(EnableCtrlBackspace, #PB_Procedure)
+          If *StaticData\Flags & #PB_ComboBox_Editable
+            If *StaticData\Gadget = #PB_Any
+              EnableCtrlBackspace(*THIS\Gadget)
+            Else
+              EnableCtrlBackspace(*StaticData\Gadget)
+            EndIf
+          EndIf
+        CompilerEndIf
         
         CompilerIf Defined(DIALOG_USE_EXPLORER, #PB_Constant)
           

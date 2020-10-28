@@ -23,6 +23,8 @@ CompilerIf #CompileWindows
   
   Global DebuggerSystemMenu
   
+  Global *StringGadgetCallback = #Null
+  
   #ERROR_ALREADY_EXISTS = $B7
   #WM_UNINITMENUPOPUP = $125
   
@@ -849,5 +851,79 @@ CompilerIf #CompileWindows
     ProcedureReturn Result
   EndProcedure
   
+  Procedure CtrlBackspaceCallback(hWnd, uMsg, wParam, lParam)
+    Protected StartPos, EndPos, *Buffer
+    Protected Length, *Char.CHARACTER, FoundChars
+    
+    If ((uMsg = #WM_CHAR) And (wParam = $7F))
+      SendMessage_(hWnd, #EM_GETSEL, @StartPos, @EndPos)
+      If (EndPos > StartPos)
+        SendMessage_(hWnd, #EM_REPLACESEL, #True, @"")
+      ElseIf (StartPos > 0)
+        Length = 2 * GetWindowTextLength_(hWnd) + 2
+        *Buffer = AllocateMemory(Length)
+        If (*Buffer)
+          GetWindowText_(hWnd, *Buffer, Length)
+          *Char = *Buffer + SizeOf(CHARACTER) * (StartPos - 1)
+          While (*Char >= *Buffer)
+            Select (*Char\c)
+              Case ' ', #TAB, #CR, #LF, #NUL
+                If (FoundChars)
+                  Break
+                EndIf
+              Default
+                FoundChars = #True
+            EndSelect
+            *Char - SizeOf(CHARACTER)
+            StartPos - 1
+          Wend
+          If (Not FoundChars)
+            StartPos = 0
+          EndIf
+          If (EndPos > StartPos)
+            SendMessage_(hWnd, #EM_SETSEL, StartPos, EndPos)
+            SendMessage_(hWnd, #EM_REPLACESEL, #True, @"")
+          EndIf
+          FreeMemory(*Buffer)
+        EndIf
+      EndIf
+      ProcedureReturn #True
+    Else
+      ProcedureReturn CallWindowProc_(*StringGadgetCallback, hWnd, uMsg, wParam, lParam)
+    EndIf
+  EndProcedure
+  
+  CompilerIf Not Defined(COMBOBOXINFO, #PB_Structure)
+    
+    Structure COMBOBOXINFO Align #PB_Structure_AlignC
+      cbSize.l
+      rcItem.RECT
+      rcButton.RECT
+      stateButton.l
+      hwndCombo.i
+      hwndItem.i
+      hwndList.i
+    EndStructure
+    
+  CompilerEndIf
+  
+  
+  Procedure EnableCtrlBackspace(Gadget)
+    If GadgetType(Gadget) = #PB_GadgetType_String
+      If *StringGadgetCallback = #Null
+        *StringGadgetCallback = GetWindowLongPtr_(GadgetID(Gadget), #GWL_WNDPROC)
+      EndIf
+      SetWindowLongPtr_(GadgetID(Gadget), #GWL_WNDPROC, @CtrlBackspaceCallback())
+    ElseIf GadgetType(Gadget) = #PB_GadgetType_ComboBox
+      Protected CBI.COMBOBOXINFO
+      CBI\cbSize = SizeOf(COMBOBOXINFO)
+      If (GetComboBoxInfo_(GadgetID(Gadget), @CBI))
+        If *StringGadgetCallback = #Null
+          *StringGadgetCallback = GetWindowLongPtr_(CBI\hwndItem, #GWL_WNDPROC)
+        EndIf
+        SetWindowLongPtr_(CBI\hwndItem, #GWL_WNDPROC, @CtrlBackspaceCallback())
+      EndIf
+    EndIf
+  EndProcedure
   
 CompilerEndIf

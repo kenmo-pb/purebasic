@@ -100,6 +100,10 @@ Declare ToolsPanel_ApplyColors(Gadget)                     ; change gadget color
 CompilerIf #CompileWindows
   Declare CreateSYSTEMMenu()           ; adds the Debugger menu to the window systemmenu
   Declare IsAdmin()
+  Declare EnableCtrlBackspace(Gadget)
+CompilerElse
+  Macro EnableCtrlBackspace(Gadget)
+  EndMacro
 CompilerEndIf
 CompilerIf #CompileMac
   Declare AutoComplete_SetupRawKeyHandler()
