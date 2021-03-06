@@ -1338,6 +1338,17 @@ Procedure LoadProject(Filename$)
   ProcedureReturn Success
 EndProcedure
 
+; Windows + SourceControlMode: change \ to /
+; All other cases: leave path as-is
+;
+Procedure.s FormatProjectPath(Path.s)
+  CompilerIf #CompileWindows
+    If ProjectSourceControlMode
+      ReplaceString(Path, "\", "/", #PB_String_InPlace)
+    EndIf
+  CompilerEndIf
+  ProcedureReturn Path
+EndProcedure
 
 ; displays an error if it fails, returns true/false
 ;
@@ -1409,7 +1420,7 @@ Procedure SaveProject(ShowErrors)
       SetXMLAttribute(*ViewPath, "view",    ".")
       SetXMLAttribute(*ViewPath, "pattern", "0")
     Else
-      SetXMLAttribute(*ViewPath, "view",    CreateRelativePath(BasePath$, ProjectExplorerPath$))
+      SetXMLAttribute(*ViewPath, "view",    FormatProjectPath(CreateRelativePath(BasePath$, ProjectExplorerPath$)))
       SetXMLAttribute(*ViewPath, "pattern", Str(ProjectExplorerPattern))
     EndIf
     
@@ -1434,7 +1445,7 @@ Procedure SaveProject(ShowErrors)
     
     ForEach ProjectFiles()
       *File = AppendNode(*Files, "file")
-      SetXMLAttribute(*File, "name", CreateRelativePath(BasePath$, ProjectFiles()\FileName$))
+      SetXMLAttribute(*File, "name", FormatProjectPath(CreateRelativePath(BasePath$, ProjectFiles()\FileName$)))
       
       *FileConfig = AppendNode(*File, "config")
       SetXMLAttribute(*FileConfig, "load",      Str(ProjectFiles()\AutoLoad))
@@ -1468,10 +1479,10 @@ Procedure SaveProject(ShowErrors)
       
       ; these are always set
       *Node = AppendNode(*Target, "inputfile")
-      SetXMLAttribute(*Node, "value", ProjectTargets()\MainFile$)
+      SetXMLAttribute(*Node, "value", FormatProjectPath(ProjectTargets()\MainFile$))
       
       *Node = AppendNode(*Target, "outputfile")
-      SetXMLAttribute(*Node, "value", ProjectTargets()\OutputFile$)
+      SetXMLAttribute(*Node, "value", FormatProjectPath(ProjectTargets()\OutputFile$))
       
       If ProjectTargets()\CustomCompiler
         *Node = AppendNode(*Target, "compiler")
@@ -1485,11 +1496,11 @@ Procedure SaveProject(ShowErrors)
       If ProjectTargets()\ExecutableName$
         ; this is a full path, so make it relative
         *Node = AppendNode(*Target, "executable")
-        SetXMLAttribute(*Node, "value", CreateRelativePath(BasePath$, ProjectTargets()\ExecutableName$))
+        SetXMLAttribute(*Node, "value", FormatProjectPath(CreateRelativePath(BasePath$, ProjectTargets()\ExecutableName$)))
       EndIf
       If ProjectTargets()\CurrentDirectory$
         *Node = AppendNode(*Target, "directory")
-        SetXMLAttribute(*Node, "value", ProjectTargets()\CurrentDirectory$) ; It's already a relative path
+        SetXMLAttribute(*Node, "value", FormatProjectPath(ProjectTargets()\CurrentDirectory$)) ; It's already a relative path
       EndIf
       
       *Options = AppendNode(*Target, "options")
@@ -1606,7 +1617,7 @@ Procedure SaveProject(ShowErrors)
       EndIf
       
       If ProjectTargets()\IconName$ Or ProjectTargets()\UseIcon
-        *Icon = AppendNode(*Target, "icon", ProjectTargets()\IconName$)
+        *Icon = AppendNode(*Target, "icon", FormatProjectPath(ProjectTargets()\IconName$))
         SetXMLAttribute(*Icon, "enable", Str(ProjectTargets()\UseIcon))
       EndIf
       
@@ -1683,7 +1694,7 @@ Procedure SaveProject(ShowErrors)
         *Resources = AppendNode(*Target, "resources")
         For i = 0 To ProjectTargets()\NbResourceFiles-1
           *Node = AppendNode(*Resources, "resource")
-          SetXMLAttribute(*Node, "value", ProjectTargets()\ResourceFiles$[i])
+          SetXMLAttribute(*Node, "value", FormatProjectPath(ProjectTargets()\ResourceFiles$[i]))
         Next i
       EndIf
       
