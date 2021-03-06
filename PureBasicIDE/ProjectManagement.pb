@@ -1394,7 +1394,11 @@ Procedure SaveProject(ShowErrors)
     *Options = AppendNode(*Config, "options")
     If ProjectSourceControlMode <> 0
       SetXMLAttribute(*Options, "closefiles", "1")
-      SetXMLAttribute(*Options, "openmode",   Str(#Project_Open_LoadMain))
+      If ProjectOpenMode = #Project_Open_LoadLast ; Disallow this setting in SourceControlMode
+        SetXMLAttribute(*Options, "openmode", Str(#Project_Open_LoadMain))
+      Else
+        SetXMLAttribute(*Options, "openmode", Str(ProjectOpenMode))
+      EndIf
       SetXMLAttribute(*Options, "name",       ProjectName$)
       SetXMLAttribute(*Options, "sourcecontrol", Str(ProjectSourceControlMode))
     Else
@@ -2260,6 +2264,9 @@ Procedure ProjectOptionsEvents(EventID)
           
           If GetGadgetState(#GADGET_Project_OpenLoadLast)
             ProjectOpenMode = #Project_Open_LoadLast
+            If ProjectSourceControlMode
+              ProjectOpenMode = #Project_Open_LoadMain ; Disallow LoadLast in SourceControlMode
+            EndIf
           ElseIf GetGadgetState(#GADGET_Project_OpenLoadAll)
             ProjectOpenMode = #Project_Open_LoadAll
           ElseIf GetGadgetState(#GADGET_Project_OpenLoadDefault)
