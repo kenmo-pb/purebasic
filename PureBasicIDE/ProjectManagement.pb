@@ -1465,12 +1465,19 @@ Procedure SaveProject(ShowErrors)
       SetXMLAttribute(*File, "name", FormatProjectPath(CreateRelativePath(BasePath$, ProjectFiles()\FileName$)))
       
       *FileConfig = AppendNode(*File, "config")
-      SetXMLAttribute(*FileConfig, "load",      Str(ProjectFiles()\AutoLoad))
-      SetXMLAttribute(*FileConfig, "scan",      Str(ProjectFiles()\AutoScan))
-      SetXMLAttribute(*FileConfig, "panel",     Str(ProjectFiles()\ShowPanel))
-      SetXMLAttribute(*FileConfig, "warn",      Str(ProjectFiles()\ShowWarning))
-      SetXMLAttribute(*FileConfig, "lastopen",  Str(ProjectFiles()\LastOpen))
-      SetXMLAttribute(*FileConfig, "sortindex", Str(ProjectFiles()\SortIndex))
+      SetXMLAttribute(*FileConfig, "load",     Str(ProjectFiles()\AutoLoad))
+      SetXMLAttribute(*FileConfig, "scan",     Str(ProjectFiles()\AutoScan))
+      SetXMLAttribute(*FileConfig, "panel",    Str(ProjectFiles()\ShowPanel))
+      
+      If ProjectSourceControlMode
+        SetXMLAttribute(*FileConfig, "warn",     "0")
+        SetXMLAttribute(*FileConfig, "lastopen", "0")
+        ;SetXMLAttribute(*FileConfig, "sortindex", "0")
+      Else
+        SetXMLAttribute(*FileConfig, "warn",     Str(ProjectFiles()\ShowWarning))
+        SetXMLAttribute(*FileConfig, "lastopen", Str(ProjectFiles()\LastOpen))
+        SetXMLAttribute(*FileConfig, "sortindex", Str(ProjectFiles()\SortIndex))
+      EndIf
       
       If ProjectFiles()\ShowPanel And (Not ProjectSourceControlMode)
         SetXMLAttribute(*FileConfig, "panelstate", ProjectFiles()\PanelState$)
