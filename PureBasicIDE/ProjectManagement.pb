@@ -1447,6 +1447,19 @@ Procedure SaveProject(ShowErrors)
     ; Make sure Project panel expanded states are up to date
     StoreProjectPanelStates()
     
+    ; Source Control Mode: Always sort the project files to prevent order differences.
+    ; Use a temporary character (after A-Z, a-z in ASCII value) instead of \ or /
+    ; so that files are not sorted differently as you work across OS.
+    If ProjectSourceControlMode
+      ForEach ProjectFiles()
+        ReplaceString(ProjectFiles()\FileName$, #PS$, Chr($7F), #PB_String_InPlace)
+      Next
+      SortStructuredList(ProjectFiles(), #PB_Sort_Ascending | #PB_Sort_NoCase, OffsetOf(ProjectFile\FileName$), #PB_String)
+      ForEach ProjectFiles()
+        ReplaceString(ProjectFiles()\FileName$, Chr($7F), #PS$, #PB_String_InPlace)
+      Next
+    EndIf
+    
     ForEach ProjectFiles()
       *File = AppendNode(*Files, "file")
       SetXMLAttribute(*File, "name", FormatProjectPath(CreateRelativePath(BasePath$, ProjectFiles()\FileName$)))
