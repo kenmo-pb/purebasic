@@ -1459,7 +1459,7 @@ Procedure SaveProject(ShowErrors)
       SetXMLAttribute(*FileConfig, "lastopen",  Str(ProjectFiles()\LastOpen))
       SetXMLAttribute(*FileConfig, "sortindex", Str(ProjectFiles()\SortIndex))
       
-      If ProjectFiles()\ShowPanel
+      If ProjectFiles()\ShowPanel And (Not ProjectSourceControlMode)
         SetXMLAttribute(*FileConfig, "panelstate", ProjectFiles()\PanelState$)
       EndIf
       
