@@ -2257,19 +2257,6 @@ Procedure SaveSourceAs()
       EndIf
     EndIf
     
-    ; On Windows, deleting/renaming a file before saving over it is a workaround to allow case-only changes.
-    ; Ex: If a file "ABC.pb" exists, and you try to save a new file as "abc.pb", Windows preserves the old name "ABC.pb" !
-    ;
-    CompilerIf #CompileWindows
-      TempFile$ = ""
-      If FileSize(FileName$) > -1
-        TempFile$ = FileName$ + ".backup"
-        If RenameFile(FileName$, TempFile$) = 0
-          TempFile$ = ""
-        EndIf
-      EndIf
-    CompilerEndIf
-    
     Result = SaveSourceFile(FileName$)
     
     If Result
@@ -2282,19 +2269,6 @@ Procedure SaveSourceAs()
       HistoryEvent(*ActiveSource, #HISTORY_SaveAs)
       UpdateIsCodeStatus() ; re-scan/re-highlight in case the IsCode value has changed
     EndIf
-    
-    
-    ; Windows: Remove or restore temporary renamed file (see TempFile$ above)
-    ;
-    CompilerIf #CompileWindows
-      If TempFile$
-        If Result
-          DeleteFile(TempFile$)
-        Else
-          RenameFile(TempFile$, FileName$)
-        EndIf
-      EndIf
-    CompilerEndIf
     
     ProcedureReturn Result
   Else
