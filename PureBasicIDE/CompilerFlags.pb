@@ -96,6 +96,19 @@ CompilerEndIf
 #MAX_ResourceFiles      = 20   ; Max number of resource files (allocated in CompileTarget structure)
 #MAX_MenuTargets        = 100  ; Max number of project targets that can be shown in the menu (reserves menu entries)
 
+; Backwards compatibility
+CompilerIf #PB_Compiler_Version < 600
+  #PB_Processor_Arm64 = -2
+  #PB_Processor_Arm32 = -1
+  CompilerIf SizeOf(INTEGER) = 8
+    #PB_Compiler_64Bit = 1
+  CompilerElse
+    #PB_Compiler_64Bit = 0
+  CompilerEndIf
+  #PB_Backend_C = -1
+  #PB_Compiler_Backend = 0
+CompilerEndIf
+
 ; Processor specific switches (for lazy people :-))
 ;
 CompilerSelect #PB_Compiler_Processor
