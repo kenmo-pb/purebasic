@@ -2699,6 +2699,7 @@ Procedure OpenProjectOptions(NewProject)
       
       SetGadgetState(#GADGET_Project_CloseAllFiles, 1)
       SetGadgetState(#GADGET_Project_OpenLoadLast, 1)
+      SetGadgetState(#GADGET_Project_SourceControlMode, 1)
       
       ProjectExplorerPattern = 0 ; default pattern is "PB files"
       ProjectExplorerPath$   = SourcePath$
