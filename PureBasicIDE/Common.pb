@@ -2181,6 +2181,7 @@ Structure SourceFile Extends CompileTarget
   CurrentLine.l
   CurrentLineOld.l
   ParserDataChanged.l    ; set to true if an update of ProcedureBrowser etc is needed
+  ProcBrowserTopIndex.l
   
   CurrentColumnBytes.l   ; current cursor position in bytes      (one UTF-8 char can have multiple bytes)
   CurrentColumnChars.l   ; current cursor position in characters (tab = 1 char and one UTF-8 char = 1 char)

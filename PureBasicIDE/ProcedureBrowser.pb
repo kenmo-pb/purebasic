@@ -14,13 +14,41 @@ Procedure UpdateProcedureList()
   ; so just do this always from here for simplicity
   UpdateIssueList()
   
+  CompilerIf #CompileWindows
+    ; Preserve scroll position of Procedure Browser
+    Static *LastSourceProcBrowsed.SourceFile = #Null
+    Protected SourceIsValid = #False
+    If *LastSourceProcBrowsed <> #Null
+      ; Verify *LastSourceProcBrowsed is still a valid SourceFile...
+      PushListPosition(FileList())
+      ForEach FileList()
+        If @FileList() = *LastSourceProcBrowsed
+          SourceIsValid = #True
+          Break
+        EndIf
+      Next
+      PopListPosition(FileList())
+    EndIf
+    If SourceIsValid
+      *LastSourceProcBrowsed\ProcBrowserTopIndex = SendMessage_(GadgetID(#GADGET_ProcedureBrowser), #LB_GETTOPINDEX, 0, 0)
+    EndIf
+  CompilerEndIf
+  
   If *ActiveSource = *ProjectInfo Or *ActiveSource\IsCode = 0
     ClearList(ProcedureList())
     ClearGadgetItems(#GADGET_ProcedureBrowser)
+    CompilerIf #CompileWindows
+      *LastSourceProcBrowsed = #Null
+    CompilerEndIf
     ProcedureReturn
   EndIf
   
   If ProcedureBrowserMode = 1
+    
+    CompilerIf #CompileWindows
+      ; GadgetFlickerFix on Windows so restoring the scroll position isn't a visible jump
+      StartGadgetFlickerFix(#GADGET_ProcedureBrowser)
+    CompilerEndIf
     
     ; Create our procedurelist from the SourceItems of the current source
     ;
@@ -181,6 +209,14 @@ Procedure UpdateProcedureList()
       If NewIndex <> -1
         SetGadgetState(#GADGET_ProcedureBrowser, NewIndex)
       EndIf
+    CompilerEndIf
+    
+    CompilerIf #CompileWindows
+      ; Restore this file's last recorded scroll position
+      SendMessage_(GadgetID(#GADGET_ProcedureBrowser), #LB_SETTOPINDEX, *ActiveSource\ProcBrowserTopIndex, 0)
+      *LastSourceProcBrowsed = *ActiveSource
+      
+      StopGadgetFlickerFix(#GADGET_ProcedureBrowser)
     CompilerEndIf
     
     ;StopGadgetFlickerFix(#GADGET_ProcedureBrowser)
