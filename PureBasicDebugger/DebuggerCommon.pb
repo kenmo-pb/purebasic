@@ -391,7 +391,14 @@ Macro IS_UNICODE(type)    : (((type) & #TYPEMASK) = #TYPE_UNICODE):     EndMacro
 ; -> Now 10 (changes for module support)
 ; -> Now 11 (changes for better module context when evaluating expressions)
 ; -> Now 12 (changes to support more included file in debugger (up to 8192))
-#DEBUGGER_Version  = 12
+
+CompilerIf (#PB_Compiler_Version < 600)
+  ; (PB5.73 LTS compatibility)
+  #DEBUGGER_Version  = 11
+CompilerElse
+  ; Latest debugger version
+  #DEBUGGER_Version  = 12
+CompilerEndIf
 
 ; size of the stack for pending commands
 ; (a protection against overflow is in place)
@@ -406,7 +413,13 @@ Macro IS_UNICODE(type)    : (((type) & #TYPEMASK) = #TYPE_UNICODE):     EndMacro
 
 ; Helpers to get the line and the file from the debugger line (which includes both)
 ;
-#DEBUGGER_DebuggerLineFileOffset = 20
+CompilerIf (#DEBUGGER_Version = 11)
+  ; (PB5.73 LTS compatibility)
+  #DEBUGGER_DebuggerLineFileOffset = 24
+CompilerElse
+  ; Latest debugger version
+  #DEBUGGER_DebuggerLineFileOffset = 20
+CompilerEndIf
 
 Macro DebuggerLineGetLine(a)
   ((a) & ((1 << #DEBUGGER_DebuggerLineFileOffset)-1))
