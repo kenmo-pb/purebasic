@@ -375,7 +375,12 @@ Procedure CreateAppWindowEvents(EventID)
           RelativeFilenameRequester(#GADGET_AndroidApp_StartupImage, Language("App", "SelectStartupImage"), "PNG images|*.png")
           
         Case #GADGET_AndroidApp_SelectStartupColor
-          Color = ColorRequester(0, WindowID(#WINDOW_CreateApp))
+          CompilerIf (#PB_Compiler_Version >= 610)
+            Color = ColorRequester(0, WindowID(#WINDOW_CreateApp))
+          CompilerElse
+            ; (PB5.73 LTS compatibility)
+            Color = ColorRequester(0)
+          CompilerEndIf
           If Color <> -1
             UpdateCreateAppStartupColor("#"+RSet(Hex(Red(Color))  , 2, "0") +
                                             RSet(Hex(Green(Color)), 2, "0") +

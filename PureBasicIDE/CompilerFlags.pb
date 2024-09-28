@@ -76,6 +76,45 @@ CompilerEndIf
 #MAX_ResourceFiles      = 20   ; Max number of resource files (allocated in CompileTarget structure)
 #MAX_MenuTargets        = 100  ; Max number of project targets that can be shown in the menu (reserves menu entries)
 
+; (PB5.73 LTS compatibility)
+CompilerIf (Not Defined(PB_Compiler_Backend, #PB_Constant))
+  #PB_Backend_Asm = 0
+  #PB_Backend_C = 1
+  #PB_Compiler_Backend = #PB_Backend_Asm
+CompilerEndIf
+CompilerIf (Not Defined(PB_Processor_Arm64, #PB_Constant))
+  #PB_Processor_Arm64 = 6
+  #PB_Processor_Arm32 = 7
+CompilerEndIf
+CompilerIf (SizeOf(INTEGER) = 8)
+  #PB_Compiler_32Bit = 0
+  #PB_Compiler_64Bit = 1
+CompilerElseIf (SizeOf(INTEGER) = 4)
+  #PB_Compiler_32Bit = 1
+  #PB_Compiler_64Bit = 0
+CompilerEndIf
+CompilerIf (Not Defined(PB_Web_Edge, #PB_Constant))
+  #PB_Web_Edge = 0;1
+CompilerEndIf
+CompilerIf (Not Defined(PB_WebView_Debug, #PB_Constant))
+  #PB_WebView_Debug = 0;1
+CompilerEndIf
+CompilerIf (Not Defined(PB_String_NoCaseAscii, #PB_Constant))
+  #PB_String_NoCaseAscii = #PB_String_NoCase;3
+CompilerEndIf
+CompilerIf (Not Defined(PB_2DDrawing_NativeText, #PB_Constant))
+  #PB_2DDrawing_NativeText = 0;$200
+CompilerEndIf
+CompilerIf (Not Defined(SCI_SETELEMENTCOLOUR, #PB_Constant))
+  #SCI_SETELEMENTCOLOUR = 2753
+CompilerEndIf
+CompilerIf (Not Defined(SC_ELEMENT_SELECTION_INACTIVE_TEXT, #PB_Constant))
+  #SC_ELEMENT_SELECTION_INACTIVE_TEXT = 16
+CompilerEndIf
+CompilerIf (Not Defined(SC_ELEMENT_SELECTION_INACTIVE_BACK, #PB_Constant))
+  #SC_ELEMENT_SELECTION_INACTIVE_BACK = 17
+CompilerEndIf
+
 ; Processor specific switches (for lazy people :-))
 ;
 CompilerSelect #PB_Compiler_Processor
