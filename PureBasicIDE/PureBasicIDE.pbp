@@ -356,6 +356,8 @@
     <file name="WindowsDebugging.pb">
       <config load="0" scan="1" panel="1" warn="0" lastopen="0" sortindex="999" panelstate="+"/>
     </file>
+    <file name="ColorSchemes.pb">
+    </file>
   </section>
   <section name="targets">
     <target name="Default Target" enabled="1" default="1">

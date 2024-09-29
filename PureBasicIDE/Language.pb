@@ -825,7 +825,7 @@ DataSection
   Data$ "EnableMarkers",    "Enable Line Markers"
   Data$ "ExtraWordChars",   "Extra characters included in word selection"
   Data$ "SelectFont",       "Select Font"
-  Data$ "DefaultColors",    "Default Color Schemes"
+  Data$ "DefaultColors",    "Color Schemes"
   Data$ "ShowWhiteSpace",   "Show whitespace characters"
   Data$ "ShowIndentGuides", "Show indentation guides"
   Data$ "UseTabIndentForSplittedLines", "Use tab indent for splitted lines"

@@ -64,6 +64,8 @@ EndProcedure
 
 Procedure LoadPreferences()
   
+  InitColorSchemes()
+  
   OpenPreferences(PreferencesFile$)
   
   ;- - Global
@@ -2531,6 +2533,9 @@ Procedure ApplyPreferences()
   
   ApplyPrefsTheme()
   
+  ; Disable some color gadgets for special color schemes
+  DisableSelectionColorGadgets(FindCurrentColorScheme())
+  
   ; Update Scintilla word chars
   ApplyWordChars()
   
@@ -2969,43 +2974,26 @@ Procedure OpenPreferencesWindow()
       
       UpdatePreferenceSyntaxColor(i, Color)
     EndIf
-    
-    If Colors(i)\PrefsValue = -1
-      DisableGadget(#GADGET_Preferences_FirstColorText+i, 1)
-      DisableGadget(#GADGET_Preferences_FirstSelectColor+i, 1)
-    EndIf
   Next i
   
-  Restore DefaultColorSchemes
-  NbSchemes = 0   ; Number of Default Color Schemes is automatically counted below
-  
   CurrentScheme = -1
-  Read.s Name$
-  While Name$ <> "" ; Empty Name$ indicates end of color schemes
-    AddGadgetItem(#GADGET_Preferences_ColorSchemes, -1, Name$)
-    ; also read the 2 toolspanel colors
-    Read.l color
-    Read.l color
-    IsMatch = #True
-    For c = 0 To #COLOR_Last
-      Read.l color
-      If Colors(c)\Enabled And (c <> #COLOR_Selection) And (c <> #COLOR_SelectionFront)
-        If color <> Colors(c)\UserValue
-          IsMatch = #False
-        EndIf
-      EndIf
-    Next c
-    If IsMatch
-      CurrentScheme = NbSchemes
+  ForEach ColorScheme()
+    AddGadgetItem(#GADGET_Preferences_ColorSchemes, ListIndex(ColorScheme()), ColorScheme()\Name)
+    SetGadgetItemData(#GADGET_Preferences_ColorSchemes, ListIndex(ColorScheme()), @ColorScheme())
+    If (ColorSchemeMatchesCurrentSettings(@ColorScheme()))
+      CurrentScheme = ListIndex(ColorScheme())
     EndIf
-    
-    NbSchemes + 1
-    Read.s Name$
-  Wend
+  Next
   
   SetGadgetItemText(#GADGET_Preferences_ColorSchemes, CountGadgetItems(#GADGET_Preferences_ColorSchemes)-1, Language("Preferences", "Accessibility"), 0)
+  ;AddGadgetItem(#GADGET_Preferences_ColorSchemes, -1, "")
   If CurrentScheme >= 0
     SetGadgetState(#GADGET_Preferences_ColorSchemes, CurrentScheme)
+    DisableSelectionColorGadgets(GetGadgetItemData(#GADGET_Preferences_ColorSchemes, CurrentScheme))
+  Else
+    ;SetGadgetState(#GADGET_Preferences_ColorSchemes, CountGadgetItems(#GADGET_Preferences_ColorSchemes)-1)
+    SetGadgetState(#GADGET_Preferences_ColorSchemes, -1)
+    DisableSelectionColorGadgets(#Null)
   EndIf
   
   ;- ------> Custom Keywords
@@ -4983,65 +4971,9 @@ Procedure PreferencesWindowEvents(EventID)
         
       Case #GADGET_Preferences_ColorSchemes
         index = GetGadgetState(#GADGET_Preferences_ColorSchemes)
-        
-        Restore DefaultColorSchemes
-        
-        If index >= 0 And index < NbSchemes
-          
-          ; skip all schemes before the index
-          For i = 1 To index
-            Read.s Name$
-            For c = 0 To #COLOR_Last+2 ; skip colors+toolspanel colors
-              Read.l color
-            Next c
-          Next i
-          
-          Read.s Name$ ; skip name
-          
-          ; read the toolspanel colors
-          Read.l PreferenceToolsPanelFrontColor
-          Read.l PreferenceToolsPanelBackColor
-          
-          ; read the highlight colors
-          For i = 0 To #COLOR_Last
-            Read.l Colors(i)\PrefsValue
-          Next i
-          
-          CompilerIf #CompileWindows
-            ; Special thing: On windows we always default back to the system colors in
-            ; the PB standard scheme for screenreader support. The 'Accessibility'
-            ; scheme has a special option to always use these colors, so it is not needed here.
-            ;
-            If index = 0
-              Colors(#COLOR_Selection)\PrefsValue      = GetSysColor_(#COLOR_HIGHLIGHT)
-              Colors(#COLOR_SelectionFront)\PrefsValue = GetSysColor_(#COLOR_HIGHLIGHTTEXT)
-            EndIf
-          CompilerEndIf
-          
-          ; apply the colors to the gadgets
-          For i = 0 To #COLOR_Last
-            If Colors(i)\PrefsValue <> -1
-              Color = Colors(i)\PrefsValue
-              DisableGadget(#GADGET_Preferences_FirstColorText+i, 0)
-              DisableGadget(#GADGET_Preferences_FirstSelectColor+i, 0)
-            Else
-              Color = $C0C0C0
-              DisableGadget(#GADGET_Preferences_FirstColorText+i, 1)
-              DisableGadget(#GADGET_Preferences_FirstSelectColor+i,1)
-            EndIf
-            
-            UpdatePreferenceSyntaxColor(i, Color)
-          Next i
-          
-          If IsImage(#IMAGE_Preferences_ToolsPanelFrontColor)
-            UpdateImageColorGadget(#GADGET_Preferences_ToolsPanelFrontColor, #IMAGE_Preferences_ToolsPanelFrontColor, PreferenceToolsPanelFrontColor)
-          EndIf
-          
-          If IsImage(#IMAGE_Preferences_ToolsPanelBackColor)
-            UpdateImageColorGadget(#GADGET_Preferences_ToolsPanelBackColor, #IMAGE_Preferences_ToolsPanelBackColor, PreferenceToolsPanelBackColor)
-          EndIf
+        If (index >= 0)
+          LoadColorSchemeToPreferencesWindow(GetGadgetItemData(#GADGET_Preferences_ColorSchemes, index))
         EndIf
-        
         
       Case #GADGET_Preferences_GetExportFile
         File$ = SaveFileRequester(Language("Misc","SaveFile"), GetGadgetText(#GADGET_Preferences_ExportFile), Language("Preferences","PrefExportPattern"), 0)
