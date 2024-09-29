@@ -64,6 +64,8 @@ EndProcedure
 
 Procedure LoadPreferences()
   
+  InitColorSchemes()
+  
   OpenPreferences(PreferencesFile$)
   
   ;- - Global
