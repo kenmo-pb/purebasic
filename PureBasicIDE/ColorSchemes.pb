@@ -4,17 +4,19 @@
 ;  See LICENSE and LICENSE-FANTAISIE in the project root for license information.
 ; --------------------------------------------------------------------------------------------
 
+#COLOR_Last_IncludingToolsPanel = #COLOR_Last + 2
+
+Global Dim ColorName.s(#COLOR_Last_IncludingToolsPanel)
+
 Structure ColorSchemeStruct
   Name.s
   File.s
-  Map ColorValue.i()
+  ColorValue.l[#COLOR_Last_IncludingToolsPanel + 1]
 EndStructure
 
 Global NewList ColorScheme.ColorSchemeStruct()
 
-#COLOR_Last_WithToolsPanel = #COLOR_Last + 2
-
-Global Dim ColorName.s(#COLOR_Last_WithToolsPanel)
+#ColorSchemeValue_NotUsed = -1
 
 Procedure RemoveColorSchemeIfExists(Name.s)
   If (Name <> "")
@@ -27,13 +29,83 @@ Procedure RemoveColorSchemeIfExists(Name.s)
   EndIf
 EndProcedure
 
+Procedure.i ReadColorSchemeFromDataSection(*ColorScheme.ColorSchemeStruct)
+  If (*ColorScheme)
+    ; This assumes the NAME STRING data has already been read!
+    With *ColorScheme
+      \File = ""
+      Read.l \ColorValue[#COLOR_Last + 1]
+      Read.l \ColorValue[#COLOR_Last + 2]
+      For i = 0 To #COLOR_Last
+        Read.l \ColorValue[i]
+      Next i
+    EndWith
+  EndIf
+  
+  ProcedureReturn (*ColorScheme)
+EndProcedure
+
+Procedure.i LoadColorSchemeFromFile(*ColorScheme.ColorSchemeStruct, File.s)
+  Protected Result.i = #Null
+  
+  If (File)
+    ; Basic validation of color scheme file...
+    If (OpenPreferences(File))
+      Name.s = GetFilePart(File, #PB_FileSystem_NoExtension)
+      If (#True);(PreferenceGroup("Sections") And (ReadPreferenceLong("IncludeColors", 0) = 1))
+        If (PreferenceGroup("Colors"))
+          
+          If (*ColorScheme) ; struct already specified - part of InitColorSchemes() list
+            ; Intentionally overwrite schemes of existing names - allows you to tweak the default themes, if desired
+            RemoveColorSchemeIfExists(Name)
+          Else ; dynamically allocate a struct - NOT part of InitColorSchemes() list!
+            *ColorScheme = AllocateStructure(ColorSchemeStruct)
+          EndIf
+          
+          If (*ColorScheme)
+            With *ColorScheme
+              \Name = Name
+              \File = File
+              
+              ; Load all defined colors into map...
+              For i = 0 To #COLOR_Last_IncludingToolsPanel
+                \ColorValue[i] = #ColorSchemeValue_NotUsed
+                ColorValueString.s = ReadPreferenceString(ColorName(i), "")
+                If (ColorValueString <> "")
+                  If (ReadPreferenceLong(ColorName(i) + "_Used", 1) = 1)
+                    If (FindString(ColorValueString, "RGB", 1, #PB_String_NoCase))
+                      \ColorValue[i] = ColorFromRGBString(ColorValueString)
+                    Else
+                      \ColorValue[i] = Val(ColorValueString) & $00FFFFFF
+                    EndIf
+                  EndIf
+                EndIf
+              Next i
+              Result = *ColorScheme
+              
+            EndWith
+          EndIf
+          
+        EndIf
+      EndIf
+      ClosePreferences()
+    EndIf
+  EndIf
+  
+  ProcedureReturn (Result)
+EndProcedure
+
 Procedure InitColorSchemes()
   
   ;ClearDebugOutput()
   ;Debug #PB_Compiler_Procedure + "()"
   
-  ; Read color names into indexable array
-  Global Dim ColorName.s(#COLOR_Last + 2)
+  ; Only need to initialize color schemes once
+  If (NbSchemes > 0)
+    ProcedureReturn
+  EndIf
+  
+  ; Read color key names into indexable array
   Restore ColorKeys
   For i = 0 To #COLOR_Last
     Read.s ColorName(i)
@@ -42,23 +114,14 @@ Procedure InitColorSchemes()
   ColorName(#COLOR_Last + 2) = "ToolsPanel_BackColor"
   
   
-  ; First, load embedded default color schemes
+  ; First, load embedded DataSection default color schemes
   ClearList(ColorScheme())
   Restore DefaultColorSchemes
   Read.s Name.s
   While (Name <> "")
     AddElement(ColorScheme())
-    With ColorScheme()
-      \Name = Name
-      ;Debug Name
-      Read.l \ColorValue(ColorName(#COLOR_Last + 1))
-      Read.l \ColorValue(ColorName(#COLOR_Last + 2))
-      For i = 0 To #COLOR_Last
-        Read.l \ColorValue(ColorName(i))
-        ;Debug ColorName(i) + " = " + Hex(\ColorValue(ColorName(i)))
-      Next i
-      ;Debug ""
-    EndWith
+    ColorScheme()\Name = Name
+    ReadColorSchemeFromDataSection(@ColorScheme())
     Read.s Name
   Wend
   NbSchemes = ListSize(ColorScheme())
@@ -69,38 +132,11 @@ Procedure InitColorSchemes()
     If (Dir)
       While (NextDirectoryEntry(Dir))
         File.s = PureBasicPath$ + "themes" + #PS$ + DirectoryEntryName(Dir)
-        
-        ; Basic validation of color scheme file...
-        If (OpenPreferences(File))
-          If (#True);(PreferenceGroup("Sections") And (ReadPreferenceLong("IncludeColors", 0) = 1))
-            If (PreferenceGroup("Colors"))
-              Name = GetFilePart(File, #PB_FileSystem_NoExtension)
-              
-              ; Intentionally overwrite schemes of existing names - allows you to customize the default themes, if desired
-              RemoveColorSchemeIfExists(Name)
-              AddElement(ColorScheme())
-              With ColorScheme()
-                \Name = Name
-                \File = File
-                
-                ; Load all defined colors into map...
-                For i = 0 To #COLOR_Last_WithToolsPanel
-                  If (ReadPreferenceLong(ColorName(i) + "_Used", 1) = 1)
-                    ColorValueString.s = ReadPreferenceString(ColorName(i), "")
-                    If (ColorValueString <> "")
-                      If (FindString(ColorValueString, "RGB", 1, #PB_String_NoCase))
-                        \ColorValue(ColorName(i)) = ColorFromRGBString(ColorValueString)
-                      Else
-                        \ColorValue(ColorName(i)) = Val(ColorValueString)
-                      EndIf
-                    EndIf
-                  EndIf
-                Next i
-                
-              EndWith
-            EndIf
-          EndIf
-          ClosePreferences()
+        AddElement(ColorScheme())
+        If (LoadColorSchemeFromFile(@ColorScheme(), File))
+          ; OK
+        Else
+          DeleteElement(ColorScheme())
         EndIf
       Wend
       FinishDirectory(Dir)
@@ -121,10 +157,10 @@ Procedure InitColorSchemes()
     EndIf
   Next
   
-  ForEach ColorScheme()
-    Debug ColorScheme()\Name
-  Next
+  ;ForEach ColorScheme()
+  ;  Debug ColorScheme()\Name
+  ;Next
   
-  CallDebugger
+  ;CallDebugger
   
 EndProcedure

@@ -64,9 +64,7 @@ EndProcedure
 
 Procedure LoadPreferences()
   
-  If (NbSchemes = 0)
-    InitColorSchemes()
-  EndIf
+  InitColorSchemes()
   
   OpenPreferences(PreferencesFile$)
   
