@@ -75,6 +75,10 @@ Enumeration 0
   #COLOR_PlainBackground
   
   #COLOR_Last = #COLOR_PlainBackground
+  
+  ; Special cases beyond "Last"
+  #COLOR_ToolsPanelFrontColor = #COLOR_Last + 1
+  #COLOR_ToolsPanelBackColor
 EndEnumeration
 
 
