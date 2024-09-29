@@ -59,9 +59,9 @@ Procedure InitColorSchemes()
       Next i
       ;Debug ""
     EndWith
-    
     Read.s Name
   Wend
+  NbSchemes = ListSize(ColorScheme())
   
   ; Then, scan 'themes' subfolder!
   If (PureBasicPath$)
@@ -69,15 +69,21 @@ Procedure InitColorSchemes()
     If (Dir)
       While (NextDirectoryEntry(Dir))
         File.s = PureBasicPath$ + "themes" + #PS$ + DirectoryEntryName(Dir)
+        
+        ; Basic validation of color scheme file...
         If (OpenPreferences(File))
           If (#True);(PreferenceGroup("Sections") And (ReadPreferenceLong("IncludeColors", 0) = 1))
             If (PreferenceGroup("Colors"))
               Name = GetFilePart(File, #PB_FileSystem_NoExtension)
+              
+              ; Intentionally overwrite schemes of existing names - allows you to customize the default themes, if desired
               RemoveColorSchemeIfExists(Name)
               AddElement(ColorScheme())
               With ColorScheme()
                 \Name = Name
                 \File = File
+                
+                ; Load all defined colors into map...
                 For i = 0 To #COLOR_Last_WithToolsPanel
                   If (ReadPreferenceLong(ColorName(i) + "_Used", 1) = 1)
                     ColorValueString.s = ReadPreferenceString(ColorName(i), "")
@@ -90,6 +96,7 @@ Procedure InitColorSchemes()
                     EndIf
                   EndIf
                 Next i
+                
               EndWith
             EndIf
           EndIf
@@ -100,12 +107,24 @@ Procedure InitColorSchemes()
     EndIf
   EndIf
   
-  ; Finally, sort schemes alphabetically, because it could be a long list
-  SortStructuredList(ColorScheme(), #PB_Sort_Ascending | #PB_Sort_NoCase, OffsetOf(ColorSchemeStruct\Name), #PB_String)
-  ;ForEach ColorScheme()
-  ;  Debug ColorScheme()\Name
-  ;Next
   
-  ;CallDebugger
+  ; If additional schemes were found, sort schemes alphabetically, because it could become a long list
+  If (ListSize(ColorScheme()) > NbSchemes)
+    NbSchemes = ListSize(ColorScheme())
+    SortStructuredList(ColorScheme(), #PB_Sort_Ascending | #PB_Sort_NoCase, OffsetOf(ColorSchemeStruct\Name), #PB_String)
+  EndIf
+  
+  ; Ensure "Accessibility" scheme always at bottom of list, for special handling
+  ForEach ColorScheme()
+    If (ColorScheme()\Name = "Accessibility")
+      MoveElement(ColorScheme(), #PB_List_Last)
+    EndIf
+  Next
+  
+  ForEach ColorScheme()
+    Debug ColorScheme()\Name
+  Next
+  
+  CallDebugger
   
 EndProcedure
