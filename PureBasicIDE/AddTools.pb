@@ -59,6 +59,13 @@ Procedure AddTools_ExecuteCurrent(Trigger, *Target.CompileTarget)
     *Source = 0
   EndIf
   
+  If LCase(Left(ToolsList()\CommandLine$, 9)) = "scheme://"
+    If CommandlineBuild = 0
+      ApplyColorSchemeResourceToIDE(Trim(Mid(ToolsList()\CommandLine$, 10)))
+    EndIf
+    ProcedureReturn
+  EndIf
+  
   If Trim(ToolsList()\CommandLine$) <> ""
     
     ; for source specific tools we must check if the given source allows this tool

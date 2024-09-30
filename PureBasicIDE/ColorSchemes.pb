@@ -60,6 +60,18 @@ Procedure FindCurrentColorScheme()
   ProcedureReturn *ColorScheme
 EndProcedure
 
+; Returns #True if the specified scheme color is "required" to be set, or #False if it's optional (based on which have checkboxes in Preferences window)
+Procedure IsRequiredColorSchemeColor(index)
+  Select index
+    ; In Preferences window, these colors do not have a checkbox to disable them
+    Case #COLOR_NormalText, #COLOR_GlobalBackground, #COLOR_PlainBackground, #COLOR_Cursor, #COLOR_Selection, #COLOR_SelectionFront
+      ProcedureReturn #True
+    Case #COLOR_ToolsPanelFrontColor, #COLOR_ToolsPanelBackColor
+      ProcedureReturn #True
+  EndSelect
+  ProcedureReturn #False
+EndProcedure
+
 ; Guess the specified color for a given Color Scheme, falling back to its basic background/text colors
 Procedure GuessColorSchemeColor(*ColorScheme.ColorSchemeStruct, index)
   Select index
@@ -115,6 +127,43 @@ Procedure DisableSelectionColorGadgets(*ColorScheme.ColorSchemeStruct)
     DisableGadget(#GADGET_Preferences_FirstColorText   + #COLOR_SelectionFront, ShouldDisable)
     DisableGadget(#GADGET_Preferences_FirstSelectColor + #COLOR_SelectionFront, ShouldDisable)
   CompilerEndIf
+EndProcedure
+
+; Immediately apply the specified *ColorScheme to the entire IDE
+Procedure ApplyColorSchemeToIDE(*ColorScheme.ColorSchemeStruct)
+  If *ColorScheme
+    
+    For i = 0 To #COLOR_Last
+      Colors(i)\UserValue = *ColorScheme\ColorValue[i]
+      If *ColorScheme\ColorValue[i] >= 0
+        Colors(i)\Enabled = #True
+      Else
+        Colors(i)\UserValue = GuessColorSchemeColor(*ColorScheme, i)
+        If IsRequiredColorSchemeColor(i)
+          Colors(i)\Enabled = #True
+        EndIf
+      EndIf
+    Next i
+    
+    CompilerIf #CompileWindows
+      If *ColorScheme\IsIDEDefault Or *ColorScheme\IsAccessibility Or EnableAccessibility
+        Colors(#COLOR_Selection)\UserValue      = GetSysColor_(#COLOR_HIGHLIGHT)
+        Colors(#COLOR_SelectionFront)\UserValue = GetSysColor_(#COLOR_HIGHLIGHTTEXT)
+      EndIf
+    CompilerEndIf
+    
+    ToolsPanelFrontColor = *ColorScheme\ColorValue[#COLOR_ToolsPanelFrontColor]
+    If ToolsPanelFrontColor < 0
+      ToolsPanelFrontColor = GuessColorSchemeColor(*ColorScheme, #COLOR_ToolsPanelFrontColor)
+    EndIf
+    ToolsPanelBackColor  = *ColorScheme\ColorValue[#COLOR_ToolsPanelBackColor]
+    If ToolsPanelBackColor < 0
+      ToolsPanelBackColor = GuessColorSchemeColor(*ColorScheme, #COLOR_ToolsPanelBackColor)
+    EndIf
+    
+    ApplyAllColorPreferences()
+  
+  EndIf
 EndProcedure
 
 ; Load the specified *ColorScheme to the Preferences gadgets
@@ -205,8 +254,15 @@ Procedure LoadColorSchemeFromFile(*ColorScheme.ColorSchemeStruct, File$)
       If PreferenceGroup("Sections") And (ReadPreferenceLong("IncludeColors", 0) = 1)
         If PreferenceGroup("Colors")
           
-          If *ColorScheme
+          If *ColorScheme ; struct already specified - part of InitColorSchemes() list
             RemoveColorSchemeIfExists(Name$)
+            Allocated = #False
+          Else ; NULL --> dynamically allocate a struct now - NOT part of InitColorSchemes() list!
+            *ColorScheme = AllocateStructure(ColorSchemeStruct)
+            Allocated = #True
+          EndIf
+          
+          If *ColorScheme
             *ColorScheme\Name$ = Name$
             *ColorScheme\File$ = File$
             
@@ -224,7 +280,24 @@ Procedure LoadColorSchemeFromFile(*ColorScheme.ColorSchemeStruct, File$)
                 EndIf
               EndIf
             Next i
-            Result = *ColorScheme
+            
+            ; Require at least background and text colors to be defined, or else reject it
+            If *ColorScheme\ColorValue[#COLOR_GlobalBackground] >= 0 And *ColorScheme\ColorValue[#COLOR_NormalText] >= 0
+              Result = *ColorScheme
+              
+              ; Fill in missing colors
+              For i = 0 To #COLOR_Last_IncludingToolsPanel
+                If *ColorScheme\ColorValue[i] = -1
+                  *ColorScheme\ColorValue[i] = GuessColorSchemeColor(*ColorScheme, i)
+                EndIf
+              Next i
+            EndIf
+            
+            If Not Result
+              If Allocated
+                FreeStructure(*ColorScheme) ; free allocated struct, if failed to load color scheme
+              EndIf
+            EndIf
             
           EndIf
           
@@ -232,6 +305,52 @@ Procedure LoadColorSchemeFromFile(*ColorScheme.ColorSchemeStruct, File$)
       EndIf
       ClosePreferences()
     EndIf
+  EndIf
+  
+  ProcedureReturn Result
+EndProcedure
+
+; Find a known color scheme by its name (return *ColorScheme pointer)
+Procedure ColorSchemeByName(Name$)
+  Protected *ColorScheme.ColorSchemeStruct = #Null
+  
+  ForEach ColorScheme()
+    If ColorScheme()\Name$ = Name$ Or (#CompileWindows And (LCase(ColorScheme()\Name$) = LCase(Name$)))
+      *ColorScheme = @ColorScheme()
+      Break
+    EndIf
+  Next
+  
+  ProcedureReturn *ColorScheme
+EndProcedure
+
+; Immediately apply the named color scheme "resource" to the entire IDE
+; (This can either be a scheme file to load, or just the name (no extension) of a known scheme such as "Blue Style")
+Procedure ApplyColorSchemeResourceToIDE(Resource$)
+  Protected Result = #False
+  
+  If IsWindow(#WINDOW_Preferences)
+    ProcedureReturn #False
+  EndIf
+  
+  If Resource$ <> ""
+    
+    Protected *ColorScheme.ColorSchemeStruct = ColorSchemeByName(Resource$)
+    If *ColorScheme
+      ApplyColorSchemeToIDE(*ColorScheme)
+      Result = #True
+    Else
+      ; Resource name does not match an already-loaded color scheme, so attempt to load it from file...
+      Protected TempColorScheme.ColorSchemeStruct
+      If LoadColorSchemeFromFile(@TempColorScheme, Resource$)
+        ApplyColorSchemeToIDE(@TempColorScheme)
+        Result = #True
+      Else
+        MessageRequester(#ProductName$, Language("FileStuff", "MiscLoadError") + #NewLine + Resource$, #FLAG_Error)
+        ChangeStatus(Language("FileStuff", "MiscLoadError"), 3000)
+      EndIf
+    EndIf
+    
   EndIf
   
   ProcedureReturn Result

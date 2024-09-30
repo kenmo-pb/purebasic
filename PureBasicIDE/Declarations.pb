@@ -495,11 +495,15 @@ Declare CodePageLength(CodePage, String$)                      ; get length of s
 Declare LoadPreferences()             ; load the preferences file
 Declare SavePreferences()             ; save the prefs to file
 Declare ApplyPreferences()            ; apply prefs changes to the editor and all open windows
+Declare ApplyAllColorPreferences()    ; apply color scheme changes to the editor and all open windows
 Declare OpenPreferencesWindow()
 Declare UpdatePreferenceWindow()
 Declare PreferencesWindowEvents(EventID)
 Declare UpdatePreferenceSyntaxColor(ColorIndex, Color)
 Declare UpdateImageColorGadget(Gadget, Image, Color)
+
+;- ColorSchemes.pb
+Declare ApplyColorSchemeResourceToIDE(Name$)
 
 ;- ProcedureBrowser.pb
 ;

@@ -2102,6 +2102,67 @@ Procedure IsPreferenceChanged()
   ProcedureReturn 0
 EndProcedure
 
+
+Procedure UpdateAllSyntaxHighlighting(ColorsOnly = #False)
+  *Source = *ActiveSource
+  
+  ForEach FileList()
+    If @FileList() <> *ProjectInfo
+      *ActiveSource = @FileList()
+      
+      If Not ColorsOnly
+        FullSourceScan(@FileList())                     ; re-scan autocomplete + procedurebrowser
+        SortParserData(@FileList()\Parser, @FileList()) ; update sorted data in case its not the active source
+        UpdateFolding(@FileList(), 0, -1)               ; redo all folding
+      EndIf
+      
+      If EnableColoring
+        SetUpHighlightingColors() ; needed for every gadget individually now (scintilla)
+        SetBackgroundColor()
+        SetLineNumberColor()
+        UpdateHighlighting()   ; highlight everything after a prefs update
+      Else
+        RemoveAllColoring()
+      EndIf
+      
+      If Not ColorsOnly
+        ; refresh icon of project info (if present)
+        If @FileList() = *ProjectInfo
+          SetTabBarGadgetItemImage(#GADGET_FilesPanel, ListIndex(FileList()), OptionalImageID(#IMAGE_FilePanel_Project))
+        EndIf
+        
+        ; check for a change in IsCode status (due to changed file extensions for code files
+        If FileList()\FileName$ <> "" And FileList()\IsCode <> IsCodeFile(FileList()\FileName$)
+          FileList()\IsCode = IsCodeFile(FileList()\FileName$)
+          UpdateIsCodeStatus()
+        EndIf
+      EndIf
+      
+    EndIf
+  Next FileList()
+  
+  ChangeCurrentElement(FileList(), *Source)
+  *ActiveSource = *Source
+EndProcedure
+
+Procedure ApplyAllColorPreferences()
+  
+  ; Subset of ApplyPreferences()...
+  
+  IsApplyPreferences = #True
+  StartFlickerFix(#WINDOW_Main)
+  
+  CopyList(UsedPanelTools(), NewUsedPanelTools())
+  UpdateMainWindow()
+  
+  CalculateHighlightingColors()
+  UpdateAllSyntaxHighlighting(#True)
+  
+  StopFlickerFix(#WINDOW_Main, 1)
+  IsApplyPreferences = #False
+  
+EndProcedure
+
 Procedure ApplyPreferences()
   
   If IsPreferenceChanged() = 0 Or IsApplyPreferences ; Ensures there is not a recursive call as we are processing event in the apply
@@ -2623,39 +2684,7 @@ Procedure ApplyPreferences()
   
   ; update all syntax highlighthing
   ;
-  *Source = *ActiveSource
-  ForEach FileList()
-    If @FileList() <> *ProjectInfo
-      *ActiveSource = @FileList()
-      
-      FullSourceScan(@FileList())                     ; re-scan autocomplete + procedurebrowser
-      SortParserData(@FileList()\Parser, @FileList()) ; update sorted data in case its not the active source
-      UpdateFolding(@FileList(), 0, -1)               ; redo all folding
-      
-      If EnableColoring
-        SetUpHighlightingColors() ; needed for every gadget individually now (scintilla)
-        SetBackgroundColor()
-        SetLineNumberColor()
-        UpdateHighlighting()   ; highlight everything after a prefs update
-      Else
-        RemoveAllColoring()
-      EndIf
-      
-      ; refresh icon of project info (if present)
-      If @FileList() = *ProjectInfo
-        SetTabBarGadgetItemImage(#GADGET_FilesPanel, ListIndex(FileList()), OptionalImageID(#IMAGE_FilePanel_Project))
-      EndIf
-      
-      ; check for a change in IsCode status (due to changed file extensions for code files
-      If FileList()\FileName$ <> "" And FileList()\IsCode <> IsCodeFile(FileList()\FileName$)
-        FileList()\IsCode = IsCodeFile(FileList()\FileName$)
-        UpdateIsCodeStatus()
-      EndIf
-    EndIf
-  Next FileList()
-  
-  ChangeCurrentElement(FileList(), *Source)
-  *ActiveSource = *Source
+  UpdateAllSyntaxHighlighting()
   
   ; Re-scan all non-loaded project files for changed options
   ;
