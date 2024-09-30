@@ -28,6 +28,7 @@ Global NewList ColorScheme.ColorSchemeStruct()
 Global PreferenceToolsPanelFrontColor, PreferenceToolsPanelBackColor
 Declare UpdatePreferenceSyntaxColor(ColorIndex, Color)
 Declare UpdateImageColorGadget(Gadget, Image, Color)
+Declare ApplyAllColorPreferences()
 
 
 Procedure.i ColorSchemeMatchesCurrentSettings(*ColorScheme.ColorSchemeStruct)
@@ -58,6 +59,17 @@ Procedure.i FindCurrentColorScheme()
   Next
   
   ProcedureReturn (*ColorScheme)
+EndProcedure
+
+Procedure.i IsRequiredColorSchemeColor(index.i)
+  Select (index)
+    ; In Preferences window, these colors do not have a checkbox to disable them
+    Case #COLOR_NormalText, #COLOR_GlobalBackground, #COLOR_PlainBackground, #COLOR_Cursor, #COLOR_Selection, #COLOR_SelectionFront
+      ProcedureReturn (#True)
+    Case #COLOR_ToolsPanelFrontColor, #COLOR_ToolsPanelBackColor
+      ProcedureReturn (#True)
+  EndSelect
+  ProcedureReturn (#False)
 EndProcedure
 
 Procedure.i GuessColorSchemeColor(*ColorScheme.ColorSchemeStruct, index.i)
@@ -113,6 +125,42 @@ Procedure DisableSelectionColorGadgets(*ColorScheme.ColorSchemeStruct)
     DisableGadget(#GADGET_Preferences_FirstColorText   + #COLOR_SelectionFront, ShouldDisable)
     DisableGadget(#GADGET_Preferences_FirstSelectColor + #COLOR_SelectionFront, ShouldDisable)
   CompilerEndIf
+EndProcedure
+
+Procedure ApplyColorSchemeToIDE(*ColorScheme.ColorSchemeStruct)
+  If (*ColorScheme)
+    
+    For i = 0 To #COLOR_Last
+      Colors(i)\UserValue = *ColorScheme\ColorValue[i]
+      If (*ColorScheme\ColorValue[i] >= 0)
+        Colors(i)\Enabled = #True
+      Else
+        Colors(i)\UserValue = GuessColorSchemeColor(*ColorScheme, i)
+        If (IsRequiredColorSchemeColor(i))
+          Colors(i)\Enabled = #True
+        EndIf
+      EndIf
+    Next i
+    
+    CompilerIf #CompileWindows
+      If *ColorScheme\IsIDEDefault Or *ColorScheme\IsAccessibility Or EnableAccessibility
+        Colors(#COLOR_Selection)\UserValue      = GetSysColor_(#COLOR_HIGHLIGHT)
+        Colors(#COLOR_SelectionFront)\UserValue = GetSysColor_(#COLOR_HIGHLIGHTTEXT)
+      EndIf
+    CompilerEndIf
+    
+    ToolsPanelFrontColor = *ColorScheme\ColorValue[#COLOR_ToolsPanelFrontColor]
+    If (ToolsPanelFrontColor < 0)
+      ToolsPanelFrontColor = GuessColorSchemeColor(*ColorScheme, #COLOR_ToolsPanelFrontColor)
+    EndIf
+    ToolsPanelBackColor  = *ColorScheme\ColorValue[#COLOR_ToolsPanelBackColor]
+    If (ToolsPanelBackColor < 0)
+      ToolsPanelBackColor = GuessColorSchemeColor(*ColorScheme, #COLOR_ToolsPanelBackColor)
+    EndIf
+    
+    ApplyAllColorPreferences()
+  
+  EndIf
 EndProcedure
 
 Procedure LoadColorSchemeToPreferencesWindow(*ColorScheme.ColorSchemeStruct)
@@ -204,8 +252,10 @@ Procedure.i LoadColorSchemeFromFile(*ColorScheme.ColorSchemeStruct, File.s)
           If (*ColorScheme) ; struct already specified - part of InitColorSchemes() list
             ; Intentionally overwrite schemes of existing names - allows you to tweak the default themes, if desired
             RemoveColorSchemeIfExists(Name)
+            Allocated.i = #False
           Else ; NULL --> dynamically allocate a struct now - NOT part of InitColorSchemes() list!
             *ColorScheme = AllocateStructure(ColorSchemeStruct)
+            Allocated.i = #True
           EndIf
           
           If (*ColorScheme)
@@ -227,15 +277,73 @@ Procedure.i LoadColorSchemeFromFile(*ColorScheme.ColorSchemeStruct, File.s)
                   EndIf
                 EndIf
               Next i
-              Result = *ColorScheme
+              
+              ; Require at least background and text colors to be defined, or else reject it
+              If ((\ColorValue[#COLOR_GlobalBackground] >= 0) And (\ColorValue[#COLOR_NormalText] >= 0))
+                Result = *ColorScheme
+                
+                ; Fill in missing colors
+                For i = 0 To #COLOR_Last_IncludingToolsPanel
+                  If (#True);(IsRequiredColorSchemeColor(i))
+                    If (\ColorValue[i] = -1)
+                      \ColorValue[i] = GuessColorSchemeColor(*ColorScheme, i)
+                    EndIf
+                  EndIf
+                Next i
+              EndIf
               
             EndWith
+            If (Not Result)
+              If (Allocated)
+                FreeStructure(*ColorScheme)
+              EndIf
+            EndIf
           EndIf
           
         EndIf
       EndIf
       ClosePreferences()
     EndIf
+  EndIf
+  
+  ProcedureReturn (Result)
+EndProcedure
+
+Procedure.i ColorSchemeByName(Name.s)
+  Protected *ColorScheme.ColorSchemeStruct = #Null
+  
+  ForEach (ColorScheme())
+    If ((ColorScheme()\Name = Name) Or (#CompileWindows And (LCase(ColorScheme()\Name) = LCase(Name))))
+      *ColorScheme = @ColorScheme()
+      Break
+    EndIf
+  Next
+  
+  ProcedureReturn (*ColorScheme)
+EndProcedure
+
+Procedure.i ApplyColorSchemeResourceToIDE(Resource.s)
+  Protected Result.i = #False
+  
+  If IsWindow(#WINDOW_Preferences)
+    ProcedureReturn (#False)
+  EndIf
+  
+  If (Resource)
+    
+    Protected *ColorScheme.ColorSchemeStruct = ColorSchemeByName(Resource)
+    If (*ColorScheme)
+      ApplyColorSchemeToIDE(*ColorScheme)
+    Else
+      Protected TempColorScheme.ColorSchemeStruct
+      If (LoadColorSchemeFromFile(@TempColorScheme, Resource))
+        ApplyColorSchemeToIDE(@TempColorScheme)
+      Else
+        MessageRequester(#ProductName$, Language("FileStuff","MiscLoadError")+#NewLine+Resource, #FLAG_Error)
+        ChangeStatus(Language("FileStuff","MiscLoadError"), 3000)
+      EndIf
+    EndIf
+    
   EndIf
   
   ProcedureReturn (Result)

@@ -6,6 +6,8 @@
 
 Global IsNewTool
 
+Declare ApplyColorSchemeResourceToIDE(Resource.s)
+
 Procedure AddTools_AddMenuEntries()
   
   ; do y count of the menu items to add:
@@ -57,6 +59,13 @@ Procedure AddTools_ExecuteCurrent(Trigger, *Target.CompileTarget)
     *Source.SourceFile = *Target
   Else
     *Source = 0
+  EndIf
+  
+  If (Left(ToolsList()\CommandLine$, 9) = "scheme://")
+    If CommandlineBuild = 0
+      ApplyColorSchemeResourceToIDE(Trim(Mid(ToolsList()\CommandLine$, 10)))
+    EndIf
+    ProcedureReturn
   EndIf
   
   If Trim(ToolsList()\CommandLine$) <> ""
