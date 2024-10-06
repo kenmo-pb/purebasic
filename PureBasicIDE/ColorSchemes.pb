@@ -20,6 +20,9 @@ EndStructure
 
 Global NewList ColorScheme.ColorSchemeStruct()
 
+#ColorSchemeValue_UseSysColor = -1
+#ColorSchemeValue_Undefined   = -2
+
 
 ; These are required (from Preferences.pb)
 Global PreferenceToolsPanelFrontColor, PreferenceToolsPanelBackColor
@@ -32,7 +35,7 @@ Procedure.i ColorSchemeMatchesCurrentSettings(*ColorScheme.ColorSchemeStruct)
   
   For i = 0 To #COLOR_Last
     If ((i <> #COLOR_Selection) And (i <> #COLOR_SelectionFront)) ; selection colors may follow OS, so skip them for scheme match check
-      If (Colors(i)\Enabled And (*ColorScheme\ColorValue[i] >= 0))
+      If (*ColorScheme\ColorValue[i] >= 0)
         If (*ColorScheme\ColorValue[i] <> Colors(i)\UserValue)
           Result = #False
           Break
@@ -44,12 +47,36 @@ Procedure.i ColorSchemeMatchesCurrentSettings(*ColorScheme.ColorSchemeStruct)
   ProcedureReturn (Result)
 EndProcedure
 
-Procedure ApplyColorSchemeToIDE(*ColorScheme.ColorSchemeStruct)
-  If (*ColorScheme)
-    
-    ; Placeholder for future functionality: immediately apply a color scheme to IDE without using Preferences window
-    
-  EndIf
+Procedure.i GuessColorSchemeColor(*ColorScheme.ColorSchemeStruct, index.i)
+  Select (index)
+    Case #COLOR_GlobalBackground
+      Color = #White
+    Case #COLOR_NormalText
+      Color = $FFFFFF - *ColorScheme\ColorValue[#COLOR_GlobalBackground]
+      
+    Case #COLOR_CurrentLine, #COLOR_DisabledBack, #COLOR_LineNumberBack, #COLOR_PlainBackground, #COLOR_ProcedureBack, #COLOR_ToolsPanelBackColor
+      Color = *ColorScheme\ColorValue[#COLOR_GlobalBackground] ; assume it should match global background
+    Case #COLOR_DebuggerBreakPoint, #COLOR_DebuggerError, #COLOR_DebuggerLine, #COLOR_DebuggerWarning
+      Color = *ColorScheme\ColorValue[#COLOR_GlobalBackground]
+      
+    Case #COLOR_SelectionFront
+      CompilerIf (#CompileWindows)
+        Color = GetSysColor_(#COLOR_HIGHLIGHTTEXT)
+      CompilerElse
+        Color = *ColorScheme\ColorValue[#COLOR_GlobalBackground]
+      CompilerEndIf
+    Case #COLOR_Selection, #COLOR_SelectionRepeat
+      CompilerIf (#CompileWindows)
+        Color = GetSysColor_(#COLOR_HIGHLIGHT)
+      CompilerElse
+        Color = *ColorScheme\ColorValue[#COLOR_NormalText]
+      CompilerEndIf
+      
+    Default
+      Color = *ColorScheme\ColorValue[#COLOR_NormalText] ; otherwise, assume it should match normal foreground color
+  EndSelect
+  
+  ProcedureReturn (Color)
 EndProcedure
 
 Procedure LoadColorSchemeToPreferencesWindow(*ColorScheme.ColorSchemeStruct)
@@ -62,36 +89,41 @@ Procedure LoadColorSchemeToPreferencesWindow(*ColorScheme.ColorSchemeStruct)
       Colors(i)\PrefsValue = *ColorScheme\ColorValue[i]
     Next i
     
+    DisableSelectionColors = #False
     CompilerIf #CompileWindows
       ; Special thing: On windows we always default back to the system colors in
       ; the PB standard scheme for screenreader support. The 'Accessibility'
       ; scheme has a special option to always use these colors, so it is not needed here.
       ;
-      If *ColorScheme\IsIDEDefault Or *ColorScheme\IsAccessibility
+      If *ColorScheme\IsIDEDefault Or *ColorScheme\IsAccessibility Or EnableAccessibility Or (Colors(#COLOR_Selection)\PrefsValue = #ColorSchemeValue_UseSysColor)
         Colors(#COLOR_Selection)\PrefsValue      = GetSysColor_(#COLOR_HIGHLIGHT)
         Colors(#COLOR_SelectionFront)\PrefsValue = GetSysColor_(#COLOR_HIGHLIGHTTEXT)
+      EndIf
+      If (*ColorScheme\IsAccessibility Or EnableAccessibility)
+        DisableSelectionColors = #True
       EndIf
     CompilerEndIf
     
     For i = 0 To #COLOR_Last
-      If (Colors(i)\PrefsValue <> -1)
-        Color = Colors(i)\PrefsValue
-        DisableGadget(#GADGET_Preferences_FirstColorText+i, 0)
-        DisableGadget(#GADGET_Preferences_FirstSelectColor+i, 0)
+      If (Colors(i)\PrefsValue >= 0)
+        UpdatePreferenceSyntaxColor(i, Colors(i)\PrefsValue)
       Else
-        If ((i <> #COLOR_GlobalBackground) And (FindString(ColorName(i), "Back") > 0))
-          Color = *ColorScheme\ColorValue[#COLOR_GlobalBackground] ; assume it should match global background
-        ElseIf ((i <> #COLOR_NormalText) And (FindString(ColorName(i), "Back") = 0))
-          Color = *ColorScheme\ColorValue[#COLOR_NormalText] ; assume it should match normal foreground color
-        Else
-          Color = $C0C0C0
-        EndIf
-        DisableGadget(#GADGET_Preferences_FirstColorText+i, 1)
-        DisableGadget(#GADGET_Preferences_FirstSelectColor+i, 1)
+        Colors(i)\PrefsValue = GuessColorSchemeColor(*ColorScheme, i)
+        UpdatePreferenceSyntaxColor(i, Colors(i)\PrefsValue)
       EndIf
-      
-      UpdatePreferenceSyntaxColor(i, Color)
     Next i
+    
+    DisableGadget(#GADGET_Preferences_FirstColorText   + #COLOR_Selection,      DisableSelectionColors)
+    DisableGadget(#GADGET_Preferences_FirstSelectColor + #COLOR_Selection,      DisableSelectionColors)
+    DisableGadget(#GADGET_Preferences_FirstColorText   + #COLOR_SelectionFront, DisableSelectionColors)
+    DisableGadget(#GADGET_Preferences_FirstSelectColor + #COLOR_SelectionFront, DisableSelectionColors)
+    
+    If (PreferenceToolsPanelFrontColor < 0)
+      PreferenceToolsPanelFrontColor = GuessColorSchemeColor(*ColorScheme, #COLOR_ToolsPanelFrontColor)
+    EndIf
+    If (PreferenceToolsPanelBackColor < 0)
+      PreferenceToolsPanelBackColor = GuessColorSchemeColor(*ColorScheme, #COLOR_ToolsPanelBackColor)
+    EndIf
     
     If IsImage(#IMAGE_Preferences_ToolsPanelFrontColor)
       UpdateImageColorGadget(#GADGET_Preferences_ToolsPanelFrontColor, #IMAGE_Preferences_ToolsPanelFrontColor, PreferenceToolsPanelFrontColor)
@@ -154,7 +186,7 @@ Procedure.i LoadColorSchemeFromFile(*ColorScheme.ColorSchemeStruct, File.s)
               
               ; Load all defined colors into map...
               For i = 0 To #COLOR_Last_IncludingToolsPanel
-                \ColorValue[i] = -1
+                \ColorValue[i] = #ColorSchemeValue_Undefined
                 ColorValueString.s = ReadPreferenceString(ColorName(i), "")
                 If (ColorValueString <> "")
                   If (ReadPreferenceLong(ColorName(i) + "_Used", 1) = 1)
