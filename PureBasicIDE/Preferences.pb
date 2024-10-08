@@ -2504,6 +2504,9 @@ Procedure ApplyPreferences()
   
   ApplyPrefsTheme()
   
+  ; Disable some color gadgets for special color schemes
+  DisableSelectionColorGadgets(FindCurrentColorScheme())
+  
   ; Update Scintilla word chars
   ApplyWordChars()
   
@@ -2942,11 +2945,6 @@ Procedure OpenPreferencesWindow()
       
       UpdatePreferenceSyntaxColor(i, Color)
     EndIf
-    
-    If Colors(i)\PrefsValue = -1
-      DisableGadget(#GADGET_Preferences_FirstColorText+i, 1)
-      DisableGadget(#GADGET_Preferences_FirstSelectColor+i, 1)
-    EndIf
   Next i
   
   CurrentScheme = -1
@@ -2962,9 +2960,11 @@ Procedure OpenPreferencesWindow()
   ;AddGadgetItem(#GADGET_Preferences_ColorSchemes, -1, "")
   If CurrentScheme >= 0
     SetGadgetState(#GADGET_Preferences_ColorSchemes, CurrentScheme)
+    DisableSelectionColorGadgets(GetGadgetItemData(#GADGET_Preferences_ColorSchemes, CurrentScheme))
   Else
     ;SetGadgetState(#GADGET_Preferences_ColorSchemes, CountGadgetItems(#GADGET_Preferences_ColorSchemes)-1)
     SetGadgetState(#GADGET_Preferences_ColorSchemes, -1)
+    DisableSelectionColorGadgets(#Null)
   EndIf
   
   ;- ------> Custom Keywords

@@ -47,6 +47,19 @@ Procedure.i ColorSchemeMatchesCurrentSettings(*ColorScheme.ColorSchemeStruct)
   ProcedureReturn (Result)
 EndProcedure
 
+Procedure.i FindCurrentColorScheme()
+  Protected *ColorScheme.ColorSchemeStruct = #Null
+  
+  ForEach ColorScheme()
+    If (ColorSchemeMatchesCurrentSettings(@ColorScheme()))
+      *ColorScheme = @ColorScheme()
+      Break
+    EndIf
+  Next
+  
+  ProcedureReturn (*ColorScheme)
+EndProcedure
+
 Procedure.i GuessColorSchemeColor(*ColorScheme.ColorSchemeStruct, index.i)
   Select (index)
     Case #COLOR_GlobalBackground
@@ -79,6 +92,29 @@ Procedure.i GuessColorSchemeColor(*ColorScheme.ColorSchemeStruct, index.i)
   ProcedureReturn (Color)
 EndProcedure
 
+Procedure DisableSelectionColorGadgets(*ColorScheme.ColorSchemeStruct)
+  CompilerIf #CompileWindows
+    ShouldDisable = #False
+    
+    If (EnableAccessibility)
+      ShouldDisable = #True ; Accessibility mode enabled - use system selection colors, don't allow user to change them
+    Else
+      If (*ColorScheme)
+        If (*ColorScheme\IsAccessibility)
+          ShouldDisable = #True ; Accessibility scheme selected - use system selection colors, don't allow user to change them
+        ElseIf (*ColorScheme\ColorValue[#COLOR_Selection] = #ColorSchemeValue_UseSysColor) Or (*ColorScheme\ColorValue[#COLOR_SelectionFront] = #ColorSchemeValue_UseSysColor)
+          ShouldDisable = #True ;; Value of -1 (use system color) specified
+        EndIf
+      EndIf
+    EndIf
+    
+    DisableGadget(#GADGET_Preferences_FirstColorText   + #COLOR_Selection,      ShouldDisable)
+    DisableGadget(#GADGET_Preferences_FirstSelectColor + #COLOR_Selection,      ShouldDisable)
+    DisableGadget(#GADGET_Preferences_FirstColorText   + #COLOR_SelectionFront, ShouldDisable)
+    DisableGadget(#GADGET_Preferences_FirstSelectColor + #COLOR_SelectionFront, ShouldDisable)
+  CompilerEndIf
+EndProcedure
+
 Procedure LoadColorSchemeToPreferencesWindow(*ColorScheme.ColorSchemeStruct)
   If (*ColorScheme)
     
@@ -89,7 +125,6 @@ Procedure LoadColorSchemeToPreferencesWindow(*ColorScheme.ColorSchemeStruct)
       Colors(i)\PrefsValue = *ColorScheme\ColorValue[i]
     Next i
     
-    DisableSelectionColors = #False
     CompilerIf #CompileWindows
       ; Special thing: On windows we always default back to the system colors in
       ; the PB standard scheme for screenreader support. The 'Accessibility'
@@ -98,9 +133,6 @@ Procedure LoadColorSchemeToPreferencesWindow(*ColorScheme.ColorSchemeStruct)
       If *ColorScheme\IsIDEDefault Or *ColorScheme\IsAccessibility Or EnableAccessibility Or (Colors(#COLOR_Selection)\PrefsValue = #ColorSchemeValue_UseSysColor)
         Colors(#COLOR_Selection)\PrefsValue      = GetSysColor_(#COLOR_HIGHLIGHT)
         Colors(#COLOR_SelectionFront)\PrefsValue = GetSysColor_(#COLOR_HIGHLIGHTTEXT)
-      EndIf
-      If (*ColorScheme\IsAccessibility Or EnableAccessibility)
-        DisableSelectionColors = #True
       EndIf
     CompilerEndIf
     
@@ -113,10 +145,7 @@ Procedure LoadColorSchemeToPreferencesWindow(*ColorScheme.ColorSchemeStruct)
       EndIf
     Next i
     
-    DisableGadget(#GADGET_Preferences_FirstColorText   + #COLOR_Selection,      DisableSelectionColors)
-    DisableGadget(#GADGET_Preferences_FirstSelectColor + #COLOR_Selection,      DisableSelectionColors)
-    DisableGadget(#GADGET_Preferences_FirstColorText   + #COLOR_SelectionFront, DisableSelectionColors)
-    DisableGadget(#GADGET_Preferences_FirstSelectColor + #COLOR_SelectionFront, DisableSelectionColors)
+    DisableSelectionColorGadgets(*ColorScheme)
     
     If (PreferenceToolsPanelFrontColor < 0)
       PreferenceToolsPanelFrontColor = GuessColorSchemeColor(*ColorScheme, #COLOR_ToolsPanelFrontColor)
