@@ -471,6 +471,7 @@ Procedure LoadPreferences()
     Read.s MenuItem$
     Read.l DefaultShortcut
     KeyboardShortcuts(i) = ReadPreferenceLong(MenuItem$, DefaultShortcut)
+    KeyboardShortcuts(i) = NormalizeShortcut(KeyboardShortcuts(i))
   Next i
   
   ; a little fix to not have a shortcut twice, since i switched two shortcut values in the defaults
@@ -4905,6 +4906,7 @@ Procedure PreferencesWindowEvents(EventID)
         
       Case #GADGET_Preferences_ShortcutSet
         Shortcut = GetGadgetState(#GADGET_Preferences_SelectShortcut)
+        Shortcut = NormalizeShortcut(Shortcut)
         ;         Shortcut = ShortcutValues(GetGadgetState(#GADGET_Preferences_ShortcutKey))
         ;         If GetGadgetState(#GADGET_Preferences_ShortcutControl)
         ;           Shortcut | #PB_Shortcut_Control

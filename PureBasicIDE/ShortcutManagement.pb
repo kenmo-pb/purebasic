@@ -70,6 +70,31 @@ Procedure CreateKeyboardShortcuts(Window)
   
 EndProcedure
 
+Procedure NormalizeShortcut(Shortcut)
+  
+  ; On Linux/Mac, ShortcutGadget may return a lowercase base key value which does not match a #PB_Shortcut_* value, so remap to uppercase
+  CompilerIf (#CompileMac Or #CompileLinux)
+    Modifiers = Shortcut & (#PB_Shortcut_Control | #PB_Shortcut_Alt | #PB_Shortcut_Shift | #PB_Shortcut_Command)
+    BaseKey = Shortcut & (~Modifiers)
+    
+    Select (BaseKey)
+      Case 'a' To 'z'
+        CompilerIf (#PB_Shortcut_A = 'A')
+          Shortcut = #PB_Shortcut_A + (BaseKey - 'a')
+        CompilerEndIf
+      Case 'A' To 'Z'
+        CompilerIf (#PB_Shortcut_A = 'a')
+          Shortcut = #PB_Shortcut_A + (BaseKey - 'A')
+        CompilerEndIf
+    EndSelect
+    
+    ; Preserve original modifiers, even if Shortcut value was changed above
+    Shortcut = Shortcut | Modifiers
+  CompilerEndIf
+  
+  ProcedureReturn Shortcut
+EndProcedure
+
 Procedure GetBaseKeyIndex(Shortcut)
   
   If Shortcut
