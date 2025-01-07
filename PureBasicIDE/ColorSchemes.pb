@@ -10,8 +10,8 @@ Global Dim ColorName.s(#COLOR_Last_IncludingToolsPanel)
 
 ; Color Scheme structure
 Structure ColorSchemeStruct
-  Name.s
-  File.s
+  Name$
+  File$
   
   ColorValue.l[#COLOR_Last_IncludingToolsPanel + 1]
   
@@ -29,13 +29,13 @@ Global NewList ColorScheme.ColorSchemeStruct()
 
 
 ; Returns #True if the specified color scheme matches the user's current color settings, otherwise #False
-Procedure.i ColorSchemeMatchesCurrentSettings(*ColorScheme.ColorSchemeStruct)
-  Protected Result.i = #True
+Procedure ColorSchemeMatchesCurrentSettings(*ColorScheme.ColorSchemeStruct)
+  Protected Result = #True
   
   For i = 0 To #COLOR_Last
-    If ((i <> #COLOR_Selection) And (i <> #COLOR_SelectionFront)) ; selection colors may follow OS, so skip them for scheme match check
-      If (*ColorScheme\ColorValue[i] >= 0)
-        If (*ColorScheme\ColorValue[i] <> Colors(i)\UserValue)
+    If i <> #COLOR_Selection And i <> #COLOR_SelectionFront ; selection colors may follow OS, so skip them for scheme match check
+      If *ColorScheme\ColorValue[i] >= 0
+        If *ColorScheme\ColorValue[i] <> Colors(i)\UserValue
           Result = #False
           Break
         EndIf
@@ -43,26 +43,26 @@ Procedure.i ColorSchemeMatchesCurrentSettings(*ColorScheme.ColorSchemeStruct)
     EndIf
   Next i
   
-  ProcedureReturn (Result)
+  ProcedureReturn Result
 EndProcedure
 
 ; Returns *ColorScheme which matches the user's current settings, otherwise #Null if no match
-Procedure.i FindCurrentColorScheme()
+Procedure FindCurrentColorScheme()
   Protected *ColorScheme.ColorSchemeStruct = #Null
   
   ForEach ColorScheme()
-    If (ColorSchemeMatchesCurrentSettings(@ColorScheme()))
+    If ColorSchemeMatchesCurrentSettings(@ColorScheme())
       *ColorScheme = @ColorScheme()
       Break
     EndIf
   Next
   
-  ProcedureReturn (*ColorScheme)
+  ProcedureReturn *ColorScheme
 EndProcedure
 
 ; Guess the specified color for a given Color Scheme, falling back to its basic background/text colors
-Procedure.i GuessColorSchemeColor(*ColorScheme.ColorSchemeStruct, index.i)
-  Select (index)
+Procedure GuessColorSchemeColor(*ColorScheme.ColorSchemeStruct, index)
+  Select index
     Case #COLOR_GlobalBackground
       Color = #White
     Case #COLOR_NormalText
@@ -74,13 +74,13 @@ Procedure.i GuessColorSchemeColor(*ColorScheme.ColorSchemeStruct, index.i)
       Color = *ColorScheme\ColorValue[#COLOR_GlobalBackground]
       
     Case #COLOR_SelectionFront
-      CompilerIf (#CompileWindows)
+      CompilerIf #CompileWindows
         Color = GetSysColor_(#COLOR_HIGHLIGHTTEXT)
       CompilerElse
         Color = *ColorScheme\ColorValue[#COLOR_GlobalBackground]
       CompilerEndIf
     Case #COLOR_Selection, #COLOR_SelectionRepeat
-      CompilerIf (#CompileWindows)
+      CompilerIf #CompileWindows
         Color = GetSysColor_(#COLOR_HIGHLIGHT)
       CompilerElse
         Color = *ColorScheme\ColorValue[#COLOR_NormalText]
@@ -90,7 +90,7 @@ Procedure.i GuessColorSchemeColor(*ColorScheme.ColorSchemeStruct, index.i)
       Color = *ColorScheme\ColorValue[#COLOR_NormalText] ; otherwise, assume it should match normal foreground color
   EndSelect
   
-  ProcedureReturn (Color)
+  ProcedureReturn Color
 EndProcedure
 
 ; Disable color preference gadgets if appropriate (eg. disable Selection and SelectionFront when Accessibility mode expects them to match system colors)
@@ -98,13 +98,13 @@ Procedure DisableSelectionColorGadgets(*ColorScheme.ColorSchemeStruct)
   CompilerIf #CompileWindows
     ShouldDisable = #False
     
-    If (EnableAccessibility)
+    If EnableAccessibility
       ShouldDisable = #True ; Accessibility mode enabled - use system selection colors, don't allow user to change them
     Else
-      If (*ColorScheme)
-        If (*ColorScheme\IsAccessibility)
+      If *ColorScheme
+        If *ColorScheme\IsAccessibility
           ShouldDisable = #True ; Accessibility scheme selected - use system selection colors, don't allow user to change them
-        ElseIf (*ColorScheme\ColorValue[#COLOR_Selection] = #ColorSchemeValue_UseSysColor) Or (*ColorScheme\ColorValue[#COLOR_SelectionFront] = #ColorSchemeValue_UseSysColor)
+        ElseIf *ColorScheme\ColorValue[#COLOR_Selection] = #ColorSchemeValue_UseSysColor Or *ColorScheme\ColorValue[#COLOR_SelectionFront] = #ColorSchemeValue_UseSysColor
           ShouldDisable = #True ; Value of -1 (use system color) specified
         EndIf
       EndIf
@@ -119,7 +119,7 @@ EndProcedure
 
 ; Load the specified *ColorScheme to the Preferences gadgets
 Procedure LoadColorSchemeToPreferencesWindow(*ColorScheme.ColorSchemeStruct)
-  If (*ColorScheme)
+  If *ColorScheme
     
     PreferenceToolsPanelFrontColor = *ColorScheme\ColorValue[#COLOR_ToolsPanelFrontColor]
     PreferenceToolsPanelBackColor  = *ColorScheme\ColorValue[#COLOR_ToolsPanelBackColor]
@@ -140,7 +140,7 @@ Procedure LoadColorSchemeToPreferencesWindow(*ColorScheme.ColorSchemeStruct)
     CompilerEndIf
     
     For i = 0 To #COLOR_Last
-      If (Colors(i)\PrefsValue >= 0)
+      If Colors(i)\PrefsValue >= 0
         UpdatePreferenceSyntaxColor(i, Colors(i)\PrefsValue)
       Else
         Colors(i)\PrefsValue = GuessColorSchemeColor(*ColorScheme, i)
@@ -150,10 +150,10 @@ Procedure LoadColorSchemeToPreferencesWindow(*ColorScheme.ColorSchemeStruct)
     
     DisableSelectionColorGadgets(*ColorScheme)
     
-    If (PreferenceToolsPanelFrontColor < 0)
+    If PreferenceToolsPanelFrontColor < 0
       PreferenceToolsPanelFrontColor = GuessColorSchemeColor(*ColorScheme, #COLOR_ToolsPanelFrontColor)
     EndIf
-    If (PreferenceToolsPanelBackColor < 0)
+    If PreferenceToolsPanelBackColor < 0
       PreferenceToolsPanelBackColor = GuessColorSchemeColor(*ColorScheme, #COLOR_ToolsPanelBackColor)
     EndIf
     
@@ -168,10 +168,10 @@ Procedure LoadColorSchemeToPreferencesWindow(*ColorScheme.ColorSchemeStruct)
 EndProcedure
 
 ; Find and remove a known color scheme by its name
-Procedure RemoveColorSchemeIfExists(Name.s)
-  If (Name <> "")
+Procedure RemoveColorSchemeIfExists(Name$)
+  If Name$ <> ""
     ForEach ColorScheme()
-      If (ColorScheme()\Name = Name)
+      If ColorScheme()\Name$ = Name$
         DeleteElement(ColorScheme())
         Break
       EndIf
@@ -180,10 +180,10 @@ Procedure RemoveColorSchemeIfExists(Name.s)
 EndProcedure
 
 ; Read the specified *ColorScheme from data section (for built-in schemes)
-Procedure.i ReadColorSchemeFromDataSection(*ColorScheme.ColorSchemeStruct)
-  If (*ColorScheme)
+Procedure ReadColorSchemeFromDataSection(*ColorScheme.ColorSchemeStruct)
+  If *ColorScheme
     ; This assumes the NAME STRING data has already been read!
-    *ColorScheme\File = ""
+    *ColorScheme\File$ = ""
     Read.l *ColorScheme\ColorValue[#COLOR_ToolsPanelFrontColor]
     Read.l *ColorScheme\ColorValue[#COLOR_ToolsPanelBackColor]
     For i = 0 To #COLOR_Last
@@ -191,41 +191,41 @@ Procedure.i ReadColorSchemeFromDataSection(*ColorScheme.ColorSchemeStruct)
     Next i
   EndIf
   
-  ProcedureReturn (*ColorScheme)
+  ProcedureReturn *ColorScheme
 EndProcedure
 
 ; Load the specified *ColorScheme from file on disk (for external schemes)
-Procedure.i LoadColorSchemeFromFile(*ColorScheme.ColorSchemeStruct, File.s)
-  Protected Result.i = #Null
+Procedure LoadColorSchemeFromFile(*ColorScheme.ColorSchemeStruct, File$)
+  Protected Result = #Null
   
-  If (File)
+  If File$
     ; Basic validation of color scheme file...
-    If (OpenPreferences(File))
-      Name.s = GetFilePart(File, #PB_FileSystem_NoExtension)
-      If (PreferenceGroup("Sections") And (ReadPreferenceLong("IncludeColors", 0) = 1))
-        If (PreferenceGroup("Colors"))
+    If OpenPreferences(File$)
+      Name$ = GetFilePart(File$, #PB_FileSystem_NoExtension)
+      If PreferenceGroup("Sections") And (ReadPreferenceLong("IncludeColors", 0) = 1)
+        If PreferenceGroup("Colors")
           
-          If (*ColorScheme) ; struct already specified - part of InitColorSchemes() list
+          If *ColorScheme ; struct already specified - part of InitColorSchemes() list
             ; Intentionally overwrite schemes of existing names - allows you to tweak the default themes, if desired
-            RemoveColorSchemeIfExists(Name)
+            RemoveColorSchemeIfExists(Name$)
           Else ; NULL --> dynamically allocate a struct now - NOT part of InitColorSchemes() list!
             *ColorScheme = AllocateStructure(ColorSchemeStruct)
           EndIf
           
-          If (*ColorScheme)
-            *ColorScheme\Name = Name
-            *ColorScheme\File = File
+          If *ColorScheme
+            *ColorScheme\Name$ = Name$
+            *ColorScheme\File$ = File$
             
             ; Load all defined colors into map...
             For i = 0 To #COLOR_Last_IncludingToolsPanel
               *ColorScheme\ColorValue[i] = #ColorSchemeValue_Undefined
-              ColorValueString.s = ReadPreferenceString(ColorName(i), "")
-              If (ColorValueString <> "")
-                If (ReadPreferenceLong(ColorName(i) + "_Used", 1) = 1)
-                  If (FindString(ColorValueString, "RGB", 1, #PB_String_NoCase))
-                    *ColorScheme\ColorValue[i] = ColorFromRGBString(ColorValueString)
+              ColorValueString$ = ReadPreferenceString(ColorName(i), "")
+              If ColorValueString$ <> ""
+                If ReadPreferenceLong(ColorName(i) + "_Used", 1) = 1
+                  If FindString(ColorValueString$, "RGB", 1, #PB_String_NoCase)
+                    *ColorScheme\ColorValue[i] = ColorFromRGBString(ColorValueString$)
                   Else
-                    *ColorScheme\ColorValue[i] = Val(ColorValueString) & $00FFFFFF
+                    *ColorScheme\ColorValue[i] = Val(ColorValueString$) & $00FFFFFF
                   EndIf
                 EndIf
               EndIf
@@ -240,14 +240,14 @@ Procedure.i LoadColorSchemeFromFile(*ColorScheme.ColorSchemeStruct, File.s)
     EndIf
   EndIf
   
-  ProcedureReturn (Result)
+  ProcedureReturn Result
 EndProcedure
 
 ; Initialize color names, built-in color schemes, and external found color schemes
 Procedure InitColorSchemes()
   
   ; Only need to initialize color schemes once
-  If (NbSchemes > 0)
+  If NbSchemes > 0
     ProcedureReturn
   EndIf
   
@@ -263,29 +263,29 @@ Procedure InitColorSchemes()
   ; First, load embedded DataSection default color schemes
   ClearList(ColorScheme())
   Restore DefaultColorSchemes
-  Read.s Name.s
-  While (Name <> "")
+  Read.s Name$
+  While Name$ <> ""
     AddElement(ColorScheme())
-    ColorScheme()\Name = Name
+    ColorScheme()\Name$ = Name$
     ReadColorSchemeFromDataSection(@ColorScheme())
-    If (ListIndex(ColorScheme()) = 0)
+    If ListIndex(ColorScheme()) = 0
       ColorScheme()\IsIDEDefault = #True
     EndIf
-    Read.s Name
+    Read.s Name$
   Wend
   NbSchemes = ListSize(ColorScheme())
   
   ; Then, scan 'ColorSchemes' subfolder!
-  If (PureBasicPath$)
+  If PureBasicPath$
     Dir = ExamineDirectory(#PB_Any, PureBasicPath$ + #DEFAULT_ColorSchemePath, "*")
-    If (Dir)
-      While (NextDirectoryEntry(Dir))
-        If (DirectoryEntryType(Dir) = #PB_DirectoryEntry_File)
-          File.s = PureBasicPath$ + #DEFAULT_ColorSchemePath + #PS$ + DirectoryEntryName(Dir)
-          Select (LCase(GetExtensionPart(File)))
+    If Dir
+      While NextDirectoryEntry(Dir)
+        If DirectoryEntryType(Dir) = #PB_DirectoryEntry_File
+          File$ = PureBasicPath$ + #DEFAULT_ColorSchemePath + #PS$ + DirectoryEntryName(Dir)
+          Select LCase(GetExtensionPart(File$))
             Case "prefs"
               AddElement(ColorScheme())
-              If (LoadColorSchemeFromFile(@ColorScheme(), File))
+              If LoadColorSchemeFromFile(@ColorScheme(), File$)
                 ; OK
               Else
                 DeleteElement(ColorScheme())
@@ -299,14 +299,14 @@ Procedure InitColorSchemes()
   
   
   ; If additional schemes were found, sort schemes alphabetically, because it could become a long list
-  If (ListSize(ColorScheme()) > NbSchemes)
+  If ListSize(ColorScheme()) > NbSchemes
     NbSchemes = ListSize(ColorScheme())
-    SortStructuredList(ColorScheme(), #PB_Sort_Ascending | #PB_Sort_NoCase, OffsetOf(ColorSchemeStruct\Name), #PB_String)
+    SortStructuredList(ColorScheme(), #PB_Sort_Ascending | #PB_Sort_NoCase, OffsetOf(ColorSchemeStruct\Name$), #PB_String)
   EndIf
   
   ; Ensure "Accessibility" scheme always at bottom of list, for special handling
   ForEach ColorScheme()
-    If (ColorScheme()\Name = "Accessibility")
+    If ColorScheme()\Name$ = "Accessibility"
       ColorScheme()\IsAccessibility = #True
       MoveElement(ColorScheme(), #PB_List_Last)
     EndIf

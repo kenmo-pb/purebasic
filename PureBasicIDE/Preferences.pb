@@ -2978,9 +2978,9 @@ Procedure OpenPreferencesWindow()
   
   CurrentScheme = -1
   ForEach ColorScheme()
-    AddGadgetItem(#GADGET_Preferences_ColorSchemes, ListIndex(ColorScheme()), ColorScheme()\Name)
+    AddGadgetItem(#GADGET_Preferences_ColorSchemes, ListIndex(ColorScheme()), ColorScheme()\Name$)
     SetGadgetItemData(#GADGET_Preferences_ColorSchemes, ListIndex(ColorScheme()), @ColorScheme())
-    If (ColorSchemeMatchesCurrentSettings(@ColorScheme()))
+    If ColorSchemeMatchesCurrentSettings(@ColorScheme())
       CurrentScheme = ListIndex(ColorScheme())
     EndIf
   Next
@@ -4971,7 +4971,7 @@ Procedure PreferencesWindowEvents(EventID)
         
       Case #GADGET_Preferences_ColorSchemes
         index = GetGadgetState(#GADGET_Preferences_ColorSchemes)
-        If (index >= 0)
+        If index >= 0
           LoadColorSchemeToPreferencesWindow(GetGadgetItemData(#GADGET_Preferences_ColorSchemes, index))
         EndIf
         
