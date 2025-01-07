@@ -499,6 +499,8 @@ Declare ApplyPreferences()            ; apply prefs changes to the editor and al
 Declare OpenPreferencesWindow()
 Declare UpdatePreferenceWindow()
 Declare PreferencesWindowEvents(EventID)
+Declare UpdatePreferenceSyntaxColor(ColorIndex, Color)
+Declare UpdateImageColorGadget(Gadget, Image, Color)
 
 ;- ProcedureBrowser.pb
 ;

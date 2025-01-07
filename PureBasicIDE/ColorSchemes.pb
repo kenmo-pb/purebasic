@@ -27,11 +27,6 @@ Global NewList ColorScheme.ColorSchemeStruct()
 #ColorSchemeValue_Undefined   = -2
 
 
-; These (from Preferences.pb) are used
-Global PreferenceToolsPanelFrontColor, PreferenceToolsPanelBackColor
-Declare UpdatePreferenceSyntaxColor(ColorIndex, Color)
-Declare UpdateImageColorGadget(Gadget, Image, Color)
-
 
 ; Returns #True if the specified color scheme matches the user's current color settings, otherwise #False
 Procedure.i ColorSchemeMatchesCurrentSettings(*ColorScheme.ColorSchemeStruct)

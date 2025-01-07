@@ -2693,6 +2693,7 @@ Global FakeToolsPanelID ; for the windows vertical toolspanel (only non-XP windo
 Global AlwaysHideLog, ErrorLogVisible
 Global CustomKeywordFile$
 Global ToolsPanelUseFont, ToolsPanelUseColors
+Global PreferenceToolsPanelFrontColor, PreferenceToolsPanelBackColor
 
 ; OS specific highlighting color representation:
 ;
