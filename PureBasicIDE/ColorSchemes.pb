@@ -207,7 +207,7 @@ Procedure.i LoadColorSchemeFromFile(*ColorScheme.ColorSchemeStruct, File.s)
     ; Basic validation of color scheme file...
     If (OpenPreferences(File))
       Name.s = GetFilePart(File, #PB_FileSystem_NoExtension)
-      If (#True);(PreferenceGroup("Sections") And (ReadPreferenceLong("IncludeColors", 0) = 1))
+      If (PreferenceGroup("Sections") And (ReadPreferenceLong("IncludeColors", 0) = 1))
         If (PreferenceGroup("Colors"))
           
           If (*ColorScheme) ; struct already specified - part of InitColorSchemes() list
