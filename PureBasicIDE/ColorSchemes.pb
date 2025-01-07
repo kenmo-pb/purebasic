@@ -288,7 +288,7 @@ Procedure InitColorSchemes()
         If (DirectoryEntryType(Dir) = #PB_DirectoryEntry_File)
           File.s = PureBasicPath$ + #DEFAULT_ColorSchemePath + #PS$ + DirectoryEntryName(Dir)
           Select (LCase(GetExtensionPart(File)))
-            Case "prefs", "scheme", "theme", "ini" ; only attempt to load certain file extensions
+            Case "prefs"
               AddElement(ColorScheme())
               If (LoadColorSchemeFromFile(@ColorScheme(), File))
                 ; OK
