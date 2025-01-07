@@ -188,14 +188,12 @@ EndProcedure
 Procedure.i ReadColorSchemeFromDataSection(*ColorScheme.ColorSchemeStruct)
   If (*ColorScheme)
     ; This assumes the NAME STRING data has already been read!
-    With *ColorScheme
-      \File = ""
-      Read.l \ColorValue[#COLOR_ToolsPanelFrontColor]
-      Read.l \ColorValue[#COLOR_ToolsPanelBackColor]
-      For i = 0 To #COLOR_Last
-        Read.l \ColorValue[i]
-      Next i
-    EndWith
+    *ColorScheme\File = ""
+    Read.l *ColorScheme\ColorValue[#COLOR_ToolsPanelFrontColor]
+    Read.l *ColorScheme\ColorValue[#COLOR_ToolsPanelBackColor]
+    For i = 0 To #COLOR_Last
+      Read.l *ColorScheme\ColorValue[i]
+    Next i
   EndIf
   
   ProcedureReturn (*ColorScheme)
@@ -220,27 +218,25 @@ Procedure.i LoadColorSchemeFromFile(*ColorScheme.ColorSchemeStruct, File.s)
           EndIf
           
           If (*ColorScheme)
-            With *ColorScheme
-              \Name = Name
-              \File = File
-              
-              ; Load all defined colors into map...
-              For i = 0 To #COLOR_Last_IncludingToolsPanel
-                \ColorValue[i] = #ColorSchemeValue_Undefined
-                ColorValueString.s = ReadPreferenceString(ColorName(i), "")
-                If (ColorValueString <> "")
-                  If (ReadPreferenceLong(ColorName(i) + "_Used", 1) = 1)
-                    If (FindString(ColorValueString, "RGB", 1, #PB_String_NoCase))
-                      \ColorValue[i] = ColorFromRGBString(ColorValueString)
-                    Else
-                      \ColorValue[i] = Val(ColorValueString) & $00FFFFFF
-                    EndIf
+            *ColorScheme\Name = Name
+            *ColorScheme\File = File
+            
+            ; Load all defined colors into map...
+            For i = 0 To #COLOR_Last_IncludingToolsPanel
+              *ColorScheme\ColorValue[i] = #ColorSchemeValue_Undefined
+              ColorValueString.s = ReadPreferenceString(ColorName(i), "")
+              If (ColorValueString <> "")
+                If (ReadPreferenceLong(ColorName(i) + "_Used", 1) = 1)
+                  If (FindString(ColorValueString, "RGB", 1, #PB_String_NoCase))
+                    *ColorScheme\ColorValue[i] = ColorFromRGBString(ColorValueString)
+                  Else
+                    *ColorScheme\ColorValue[i] = Val(ColorValueString) & $00FFFFFF
                   EndIf
                 EndIf
-              Next i
-              Result = *ColorScheme
-              
-            EndWith
+              EndIf
+            Next i
+            Result = *ColorScheme
+            
           EndIf
           
         EndIf
