@@ -205,14 +205,8 @@ Procedure LoadColorSchemeFromFile(*ColorScheme.ColorSchemeStruct, File$)
       If PreferenceGroup("Sections") And (ReadPreferenceLong("IncludeColors", 0) = 1)
         If PreferenceGroup("Colors")
           
-          If *ColorScheme ; struct already specified - part of InitColorSchemes() list
-            ; Intentionally overwrite schemes of existing names - allows you to tweak the default themes, if desired
-            RemoveColorSchemeIfExists(Name$)
-          Else ; NULL --> dynamically allocate a struct now - NOT part of InitColorSchemes() list!
-            *ColorScheme = AllocateStructure(ColorSchemeStruct)
-          EndIf
-          
           If *ColorScheme
+            RemoveColorSchemeIfExists(Name$)
             *ColorScheme\Name$ = Name$
             *ColorScheme\File$ = File$
             
