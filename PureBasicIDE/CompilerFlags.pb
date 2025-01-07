@@ -159,6 +159,7 @@ CompilerSelect #PB_Compiler_OS
     #DEFAULT_CatalogPath        = "Catalogs\"
     #DEFAILT_LibraryViewerPlugin= "Debugger\"
     #DEFAULT_ThemePath          = "Themes\"
+    #DEFAULT_ColorSchemePath    = "ColorSchemes\"
     
     #DEFAULT_HelpPath           = "Help\"
     
@@ -226,6 +227,7 @@ CompilerSelect #PB_Compiler_OS
     #DEFAULT_HelpPath           = "help/"
     #DEFAILT_LibraryViewerPlugin= "debugger/"
     #DEFAULT_ThemePath          = "themes/"
+    #DEFAULT_ColorSchemePath    = "colorschemes/"
     
     DefaultEditorFontName$      = "Monospace" ; "Misc Fixed" doesn't seems to exists anymore on modern distro
     #DEFAULT_SplitterWidth      = 6
@@ -285,6 +287,7 @@ CompilerSelect #PB_Compiler_OS
     #DEFAULT_HelpPath           = "help/"
     #DEFAILT_LibraryViewerPlugin= "debugger/"
     #DEFAULT_ThemePath          = "themes/"
+    #DEFAULT_ColorSchemePath    = "colorschemes/"
     
     DefaultEditorFontName$      = "Monaco"
     #DEFAULT_EditorFontSize     = 14

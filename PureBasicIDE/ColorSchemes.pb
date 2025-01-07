@@ -280,13 +280,13 @@ Procedure InitColorSchemes()
   Wend
   NbSchemes = ListSize(ColorScheme())
   
-  ; Then, scan 'themes' subfolder!
+  ; Then, scan 'ColorSchemes' subfolder!
   If (PureBasicPath$)
-    Dir = ExamineDirectory(#PB_Any, PureBasicPath$ + #DEFAULT_ThemePath, "*")
+    Dir = ExamineDirectory(#PB_Any, PureBasicPath$ + #DEFAULT_ColorSchemePath, "*")
     If (Dir)
       While (NextDirectoryEntry(Dir))
         If (DirectoryEntryType(Dir) = #PB_DirectoryEntry_File)
-          File.s = PureBasicPath$ + #DEFAULT_ThemePath + #PS$ + DirectoryEntryName(Dir)
+          File.s = PureBasicPath$ + #DEFAULT_ColorSchemePath + #PS$ + DirectoryEntryName(Dir)
           Select (LCase(GetExtensionPart(File)))
             Case "prefs", "scheme", "theme", "ini" ; only attempt to load certain file extensions
               AddElement(ColorScheme())
