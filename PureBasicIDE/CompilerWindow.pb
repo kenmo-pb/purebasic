@@ -1469,6 +1469,30 @@ Procedure BuildTarget(*Target.CompileTarget)
   EndIf
 EndProcedure
 
+Procedure TargetMismatchOS(*Target.CompileTarget)
+  Mismatch = #False
+  
+  CompilerSelect #PB_Compiler_OS
+    CompilerCase #PB_OS_Windows
+      Select LCase(GetExtensionPart(*Target\OutputFile$))
+        Case "app", "dylib", "so", ""
+          Mismatch = #True
+      EndSelect
+    CompilerCase #PB_OS_Linux
+      Select LCase(GetExtensionPart(*Target\OutputFile$))
+        Case "exe", "dll", "app"
+          Mismatch = #True
+      EndSelect
+    CompilerCase #PB_OS_MacOS
+      Select LCase(GetExtensionPart(*Target\OutputFile$))
+        Case "exe", "dll", "so"
+          Mismatch = #True
+      EndSelect
+  CompilerEndSelect
+  
+  ProcedureReturn Mismatch
+EndProcedure
+
 Procedure BuildAll()
   Protected NewList *Targets.CompileTarget()
   
@@ -1479,8 +1503,10 @@ Procedure BuildAll()
     ;
     ForEach ProjectTargets()
       If ProjectTargets()\IsEnabled
-        AddElement(*Targets())
-        *Targets() = @ProjectTargets()
+        If Not TargetMismatchOS(@ProjectTargets())
+          AddElement(*Targets())
+          *Targets() = @ProjectTargets()
+        EndIf
       EndIf
     Next ProjectTargets()
     
