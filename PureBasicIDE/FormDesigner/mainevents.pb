@@ -7764,7 +7764,7 @@ Procedure FD_Event(EventID, EventGadgetID, EventType)
                   EndIf
                   ;}
                   
-                  If FontRequester(FormWindows()\FormGadgets()\gadgetfont,FormWindows()\FormGadgets()\gadgetfontsize, 0,0,fontflags)
+                  If FontRequester(FormWindows()\FormGadgets()\gadgetfont,FormWindows()\FormGadgets()\gadgetfontsize, 0,0,fontflags,WindowID(#WINDOW_Main))
                     FormAddUndoAction(1,FormWindows(),FormWindows()\FormGadgets())
                     FormWindows()\FormGadgets()\gadgetfont = SelectedFontName()
                     FormWindows()\FormGadgets()\gadgetfontsize = SelectedFontSize()
