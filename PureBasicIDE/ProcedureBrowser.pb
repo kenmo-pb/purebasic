@@ -1257,7 +1257,7 @@ Procedure ProcedureBrowser_EventHandler(*Entry.ToolsPanelEntry, EventGadgetID)
           
         Case #GADGET_ProcedureBrowser_FrontColor
           If ProcedureBrowserCurrentIndex > -1
-            Color = ColorRequester(ProcedureBrowser_ItemColorGet(ProcedureBrowserCurrentIndex, #True))
+            Color = ColorRequester(ProcedureBrowser_ItemColorGet(ProcedureBrowserCurrentIndex, #True), WindowID(#WINDOW_Main))
             If Color <> -1
               SelectElement(ProcedureList(), ProcedureBrowserCurrentIndex)
               ProcedureBrowser_ItemColorSave(ProcedureList()\Name$, Color, -1)
@@ -1270,7 +1270,7 @@ Procedure ProcedureBrowser_EventHandler(*Entry.ToolsPanelEntry, EventGadgetID)
           
         Case #GADGET_ProcedureBrowser_BackColor
           If ProcedureBrowserCurrentIndex > -1
-            Color = ColorRequester(ProcedureBrowser_ItemColorGet(ProcedureBrowserCurrentIndex, #False))
+            Color = ColorRequester(ProcedureBrowser_ItemColorGet(ProcedureBrowserCurrentIndex, #False), WindowID(#WINDOW_Main))
             If Color <> -1
               SelectElement(ProcedureList(), ProcedureBrowserCurrentIndex)
               ProcedureBrowser_ItemColorSave(ProcedureList()\Name$, -1, Color)

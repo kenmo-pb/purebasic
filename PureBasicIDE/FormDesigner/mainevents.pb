@@ -7831,7 +7831,7 @@ Procedure FD_Event(EventID, EventGadgetID, EventType)
                 Case 20 ; front color
                   Select FormWindows()\FormGadgets()\type
                     Case #Form_Type_Calendar, #Form_Type_Container, #Form_Type_Editor, #Form_Type_ExplorerList, #Form_Type_ExplorerTree, #Form_Type_HyperLink, #Form_Type_ListIcon, #Form_Type_ListView, #Form_Type_ProgressBar, #Form_Type_ScrollArea, #Form_Type_Spin, #Form_Type_StringGadget, #Form_Type_Text, #Form_Type_TreeGadget
-                      color = ColorRequester()
+                      color = ColorRequester(FormWindows()\FormGadgets()\frontcolor, WindowID(#WINDOW_Main))
                       
                       If color > -1
                         FormAddUndoAction(1,FormWindows(),FormWindows()\FormGadgets())
@@ -7847,7 +7847,7 @@ Procedure FD_Event(EventID, EventGadgetID, EventType)
                 Case 21 ; back color (or select image)
                   Select FormWindows()\FormGadgets()\type
                     Case #Form_Type_Calendar, #Form_Type_Container, #Form_Type_Editor, #Form_Type_ExplorerList, #Form_Type_ExplorerTree, #Form_Type_HyperLink, #Form_Type_ListIcon, #Form_Type_ListView, #Form_Type_ProgressBar, #Form_Type_ScrollArea, #Form_Type_Spin, #Form_Type_StringGadget, #Form_Type_Text, #Form_Type_TreeGadget
-                      color = ColorRequester()
+                      color = ColorRequester(FormWindows()\FormGadgets()\backcolor, WindowID(#WINDOW_Main))
                       
                       If color > -1
                         FormAddUndoAction(1,FormWindows(),FormWindows()\FormGadgets())
@@ -7895,7 +7895,7 @@ Procedure FD_Event(EventID, EventGadgetID, EventType)
               row = grid_EventRow(propgrid)
               
               If row = 13 ; Window color
-                color = ColorRequester()
+                color = ColorRequester(FormWindows()\color, WindowID(#WINDOW_Main))
                 
                 If color > -1
                   FormAddUndoAction(1,FormWindows())

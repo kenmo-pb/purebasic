@@ -4840,7 +4840,7 @@ Procedure PreferencesWindowEvents(EventID)
         
         
       Case #GADGET_Preferences_ToolsPanelFrontColorSelect
-        Color = ColorRequester(PreferenceToolsPanelFrontColor)
+        Color = ColorRequester(PreferenceToolsPanelFrontColor, WindowID(#WINDOW_Preferences))
         If Color <> -1
           PreferenceToolsPanelFrontColor = Color
           If IsImage(#IMAGE_Preferences_ToolsPanelFrontColor)
@@ -4849,7 +4849,7 @@ Procedure PreferencesWindowEvents(EventID)
         EndIf
         
       Case #GADGET_Preferences_ToolsPanelBackColorSelect
-        Color = ColorRequester(PreferenceToolsPanelBackColor)
+        Color = ColorRequester(PreferenceToolsPanelBackColor, WindowID(#WINDOW_Preferences))
         If Color <> -1
           PreferenceToolsPanelBackColor = Color
           If IsImage(#IMAGE_Preferences_ToolsPanelBackColor)
@@ -5352,7 +5352,7 @@ Procedure PreferencesWindowEvents(EventID)
         EndIf
         
       Case #GADGET_Preferences_SelectIssueColor
-        NewColor = ColorRequester(PreferenceIssueColor)
+        NewColor = ColorRequester(PreferenceIssueColor, WindowID(#WINDOW_Preferences))
         If NewColor <> -1
           UpdateImageColorGadget(#GADGET_Preferences_IssueColor, #IMAGE_Preferences_IssueColor, NewColor)
           PreferenceIssueColor = NewColor
@@ -5361,7 +5361,7 @@ Procedure PreferencesWindowEvents(EventID)
       Default
         If EventGadgetID >= #GADGET_Preferences_FirstSelectColor And EventGadgetID <= #GADGET_Preferences_LastSelectColor
           index = EventGadgetID - #GADGET_Preferences_FirstSelectColor
-          Color = ColorRequester(Colors(index)\PrefsValue)
+          Color = ColorRequester(Colors(index)\PrefsValue, WindowID(#WINDOW_Preferences))
           If Color <> -1
             Colors(index)\PrefsValue = Color
             UpdatePreferenceSyntaxColor(index, Color)
