@@ -675,7 +675,7 @@ Procedure Template_EventHandler(*Entry.ToolsPanelEntry, EventGadgetID)
   Select EventGadgetID
       
     Case #GADGET_Template_Add
-      Name$ = InputRequester(Language("Templates","Title"), Language("Templates","EnterName")+":", "")
+      Name$ = InputRequester(Language("Templates","Title"), Language("Templates","EnterName")+":", "", 0, WindowID(#WINDOW_Template))
       If Name$ <> ""
         Template_SaveState()
         
@@ -751,7 +751,7 @@ Procedure Template_EventHandler(*Entry.ToolsPanelEntry, EventGadgetID)
       EndIf
       
     Case #GADGET_Template_AddDir
-      Name$ = InputRequester(Language("Templates","Title"), Language("Templates","EnterDirName")+":", "")
+      Name$ = InputRequester(Language("Templates","Title"), Language("Templates","EnterDirName")+":", "", 0, WindowID(#WINDOW_Template))
       If Name$ <> ""
         Template_SaveState()
         
@@ -845,7 +845,7 @@ Procedure Template_EventHandler(*Entry.ToolsPanelEntry, EventGadgetID)
         Else
           Title$ = Language("Templates","EnterName")
         EndIf
-        Name$ = InputRequester(Language("Templates","Title"), Title$, Template()\Name$)
+        Name$ = InputRequester(Language("Templates","Title"), Title$, Template()\Name$, 0, WindowID(#WINDOW_Template))
         If Name$ <> ""
           Template()\Name$ = Name$
           SetGadgetItemText(#GADGET_Template_Tree, index, Name$, 0)

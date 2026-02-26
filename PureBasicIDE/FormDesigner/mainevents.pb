@@ -7524,7 +7524,7 @@ Procedure FD_ProcessMenuEvent(menu_event)
       If menu_el
         ChangeCurrentElement(ObjList(),menu_el)
         
-        input.s = InputRequester("",Language("Form", "NewTabName"),ObjList()\name)
+        input.s = InputRequester("",Language("Form", "NewTabName"),ObjList()\name, 0, WindowID(#WINDOW_Main))
         If input <> ""
           PushListPosition(FormWindows())
           ChangeCurrentElement(FormWindows(),ObjList()\window)

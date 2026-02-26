@@ -1110,7 +1110,7 @@ Procedure OptionWindowEvents(EventID)
           EndIf
           
         Case #GADGET_Option_AddTarget
-          Name$ = Trim(InputRequester(Language("Compiler","AddTarget"), Language("Compiler","EnterTargetName"), Language("Compiler","NewTargetName")))
+          Name$ = Trim(InputRequester(Language("Compiler","AddTarget"), Language("Compiler","EnterTargetName"), Language("Compiler","NewTargetName"), 0, WindowID(#WINDOW_Option)))
           If Name$
             found = 0
             ForEach ProjectOptionTargets()
@@ -1149,7 +1149,7 @@ Procedure OptionWindowEvents(EventID)
           State = GetGadgetState(#GADGET_Option_TargetList)
           If State <> -1
             SelectElement(ProjectOptionTargets(), State)
-            Name$ = Trim(InputRequester(Language("Compiler","CopyTarget"), Language("Compiler","EnterTargetName"), ProjectOptionTargets()\Name$ + " " + Language("Compiler", "TargetCopySuffix")))
+            Name$ = Trim(InputRequester(Language("Compiler","CopyTarget"), Language("Compiler","EnterTargetName"), ProjectOptionTargets()\Name$ + " " + Language("Compiler", "TargetCopySuffix"), 0, WindowID(#WINDOW_Option)))
             If Name$
               found = 0
               ForEach ProjectOptionTargets()
@@ -1192,7 +1192,7 @@ Procedure OptionWindowEvents(EventID)
           State = GetGadgetState(#GADGET_Option_TargetList)
           If State <> -1
             SelectElement(ProjectOptionTargets(), State)
-            Name$ = Trim(InputRequester(Language("Compiler","EditTarget"), Language("Compiler","EnterTargetName"), ProjectOptionTargets()\Name$))
+            Name$ = Trim(InputRequester(Language("Compiler","EditTarget"), Language("Compiler","EnterTargetName"), ProjectOptionTargets()\Name$, 0, WindowID(#WINDOW_Option)))
             If Name$ <> ""
               ForEach ProjectOptionTargets()
                 If ListIndex(ProjectOptionTargets()) <> State And UCase(Name$) = UCase(ProjectOptionTargets()\Name$)

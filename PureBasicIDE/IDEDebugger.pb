@@ -1378,7 +1378,7 @@ Procedure Debugger_StepX(*Debugger.DebuggerData = 0)
   If *Debugger
     If *Debugger\ProgramState <> 0 And *Debugger\ProgramState <> -1 And *Debugger\ProgramState <> 6 And *Debugger\ProgramState <> 5
       
-      StepString$ = InputRequester(#ProductName$ + " Debugger", Language("Debugger","ChooseStep"), Str(LastStepValue))
+      StepString$ = InputRequester(#ProductName$ + " Debugger", Language("Debugger","ChooseStep"), Str(LastStepValue), 0, WindowID(#WINDOW_Main))
       If StepString$ <> ""
         
         LastStepValue = Val(StepString$)

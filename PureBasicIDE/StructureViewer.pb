@@ -899,7 +899,7 @@ Procedure StructureViewerWindowEvents(EventID)
         Case #GADGET_StructureViewer_InsertStruct
           If *ActiveSource <> *ProjectInfo
             If StructureViewerMode = 0
-              Var$ = InputRequester(Language("StructureViewer","GetVarName"), Language("StructureViewer","InputVarName"), Language("StructureViewer","DefaultVar"))
+              Var$ = InputRequester(Language("StructureViewer","GetVarName"), Language("StructureViewer","InputVarName"), Language("StructureViewer","DefaultVar"), 0, WindowID(#WINDOW_StructureViewer))
               If Var$ <> ""
                 GetCursorPosition()
                 intend = *ActiveSource\CurrentColumnChars-1
