@@ -4466,7 +4466,7 @@ Procedure PreferencesWindowEvents(EventID)
           EndIf
           
         Case #GADGET_Preferences_SelectJDK
-          Path$ = PathRequester("Select JDK", OptionJDK$)
+          Path$ = PathRequester("Select JDK", OptionJDK$, WindowID(#WINDOW_Preferences))
           If Path$
             SetGadgetText(#GADGET_Preferences_JDK, Path$)
           EndIf
@@ -4537,7 +4537,7 @@ Procedure PreferencesWindowEvents(EventID)
         Next i
         
       Case #GADGET_Preferences_GetSourcePath
-        Path$ = PathRequester("", GetGadgetText(#GADGET_Preferences_SourcePath))
+        Path$ = PathRequester("", GetGadgetText(#GADGET_Preferences_SourcePath), WindowID(#WINDOW_Preferences))
         If Path$ <> ""
           SetGadgetText(#GADGET_Preferences_SourcePath, Path$)
         EndIf

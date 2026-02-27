@@ -809,7 +809,7 @@ Procedure AddTools_EditWindowEvents(EventID)
         
         
       Case #GADGET_EditTools_ChooseWorkingDir
-        Directory$ = PathRequester(Language("AddTools","ChooseDir"), GetGadgetText(#GADGET_EditTools_WorkingDir))
+        Directory$ = PathRequester(Language("AddTools","ChooseDir"), GetGadgetText(#GADGET_EditTools_WorkingDir), WindowID(#WINDOW_EditTools))
         If Directory$ <> ""
           SetGadgetText(#GADGET_EditTools_WorkingDir, Directory$)
         EndIf

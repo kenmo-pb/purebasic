@@ -200,13 +200,13 @@ EndProcedure
 
 
 
-Procedure RelativePathRequester(Gadget, Title$)
+Procedure RelativePathRequester(Gadget, Title$, ParentID = 0)
   File$ = ResolveRelativePath(Options_CurrentBasePath$, GetGadgetText(Gadget))
   If Trim(File$) = ""
     File$ = Options_CurrentBasePath$
   EndIf
   
-  File$ = PathRequester(Title$, File$)
+  File$ = PathRequester(Title$, File$, ParentID)
   If File$
     SetGadgetText(Gadget, CreateRelativePath(Options_CurrentBasePath$, File$))
   EndIf
@@ -350,7 +350,7 @@ Procedure CreateAppWindowEvents(EventID)
           RelativeFilenameRequester(#GADGET_WebApp_HtmlFilename, Language("WebApp", "SelectHtmlFile"), "HTML files|*.html")
           
         Case #GADGET_WebApp_SelectResourceDirectory
-          RelativePathRequester(#GADGET_WebApp_ResourceDirectory, Language("App", "SelectResourceDirectory"))
+          RelativePathRequester(#GADGET_WebApp_ResourceDirectory, Language("App", "SelectResourceDirectory"), WindowID(#WINDOW_CreateApp))
           
           ; iOS
           ;
@@ -364,7 +364,7 @@ Procedure CreateAppWindowEvents(EventID)
           RelativeFilenameRequester(#GADGET_iOSApp_Output, Language("iOS", "SelectOutput"), "IPA files|*.ipa")
           
         Case #GADGET_iOSApp_SelectResourceDirectory
-          RelativePathRequester(#GADGET_iOSApp_ResourceDirectory, Language("App", "SelectResourceDirectory"))
+          RelativePathRequester(#GADGET_iOSApp_ResourceDirectory, Language("App", "SelectResourceDirectory"), WindowID(#WINDOW_CreateApp))
           
           ; Android
           ;
@@ -386,7 +386,7 @@ Procedure CreateAppWindowEvents(EventID)
           RelativeFilenameRequester(#GADGET_AndroidApp_Output, Language("Android", "SelectOutput"), "APK files|*.apk")
           
         Case #GADGET_AndroidApp_SelectResourceDirectory
-          RelativePathRequester(#GADGET_AndroidApp_ResourceDirectory, Language("App", "SelectResourceDirectory"))
+          RelativePathRequester(#GADGET_AndroidApp_ResourceDirectory, Language("App", "SelectResourceDirectory"), WindowID(#WINDOW_CreateApp))
           
         Case #GADGET_WebApp_EnableResourceDirectory,
              #GADGET_AndroidApp_EnableResourceDirectory,

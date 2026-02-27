@@ -1745,7 +1745,7 @@ Procedure DiffDialogWindowEvents(EventID)
             Gadget = #GADGET_DiffDialog_Directory2
           EndIf
           
-          Directory$ = PathRequester("", GetGadgetText(Gadget))
+          Directory$ = PathRequester("", GetGadgetText(Gadget), WindowID(#WINDOW_DiffDialog))
           If Directory$
             SetGadgetText(Gadget, Directory$)
           EndIf

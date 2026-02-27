@@ -492,7 +492,7 @@ Procedure GrepWindowEvents(EventID)
       Select GadgetID
           
         Case #GADGET_Grep_SelectDirectory
-          Directory$ = PathRequester("", GetGadgetText(#GADGET_Grep_Directory))
+          Directory$ = PathRequester("", GetGadgetText(#GADGET_Grep_Directory), WindowID(#WINDOW_Grep))
           If Directory$
             SetGadgetText(#GADGET_Grep_Directory, Directory$)
           EndIf

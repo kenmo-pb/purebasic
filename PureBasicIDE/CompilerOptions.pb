@@ -1027,7 +1027,7 @@ Procedure OptionWindowEvents(EventID)
               Path$ = ResolveRelativePath(Options_CurrentBasePath$, GetGadgetText(#GADGET_Option_CurrentDir))
             EndIf
             
-            Path$ = PathRequester("", Path$)
+            Path$ = PathRequester("", Path$, WindowID(#WINDOW_Option))
             If Path$
               SetGadgetText(#GADGET_Option_CurrentDir, CreateRelativePath(Options_CurrentBasePath$, Path$))
             EndIf
