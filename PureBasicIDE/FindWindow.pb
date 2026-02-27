@@ -156,7 +156,7 @@ Procedure FindWindowEvents(EventID)
           If *ActiveSource <> *ProjectInfo
             *Debugger.DebuggerData = IsDebuggedFile(*ActiveSource)
             If *Debugger And *Debugger\CanDestroy = 0 And #SpiderBasic = 0 ; no error if the code finished executing. In SpiderBasic the file is never locked.
-              MessageRequester(#ProductName$, Language("Debugger","EditError"), #FLAG_INFO)
+              MessageRequester(#ProductName$, Language("Debugger","EditError"), #FLAG_INFO, WindowID(#WINDOW_Find))
             Else
               FindCaseSensitive = GetGadgetState(#GADGET_Find_Case)
               FindWholeWord     = GetGadgetState(#GADGET_Find_WholeWord)
@@ -178,7 +178,7 @@ Procedure FindWindowEvents(EventID)
           If *ActiveSource <> *ProjectInfo
             *Debugger.DebuggerData = IsDebuggedFile(*ActiveSource)
             If *Debugger And *Debugger\CanDestroy = 0 And #SpiderBasic = 0 ; no error if the code finished executing. In SpiderBasic the file is never locked.
-              MessageRequester(#ProductName$, Language("Debugger","EditError"), #FLAG_INFO)
+              MessageRequester(#ProductName$, Language("Debugger","EditError"), #FLAG_INFO, WindowID(#WINDOW_Find))
             Else
               FindCaseSensitive = GetGadgetState(#GADGET_Find_Case)
               FindWholeWord     = GetGadgetState(#GADGET_Find_WholeWord)

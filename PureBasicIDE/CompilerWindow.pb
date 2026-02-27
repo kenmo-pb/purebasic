@@ -359,7 +359,7 @@ Procedure.s BuildProjectTarget(*Target.CompileTarget, Mode, CreateExe, CheckSynt
     ElseIf UseProjectBuildWindow
       BuildLogEntry(LanguagePattern("Compiler", "NoInputFile", "%target%", *Target\Name$))
     Else
-      MessageRequester(#ProductName$, LanguagePattern("Compiler", "NoInputFile", "%target%", *Target\Name$), #FLAG_Error)
+      MessageRequester(#ProductName$, LanguagePattern("Compiler", "NoInputFile", "%target%", *Target\Name$), #FLAG_Error, WindowID(#WINDOW_Build))
     EndIf
     ProcedureReturn ""
   EndIf
@@ -392,7 +392,7 @@ Procedure.s BuildProjectTarget(*Target.CompileTarget, Mode, CreateExe, CheckSynt
       ElseIf UseProjectBuildWindow
         BuildLogEntry(LanguagePattern("Compiler", "NoOutputFile", "%target%", *Target\Name$))
       Else
-        MessageRequester(#ProductName$, LanguagePattern("Compiler", "NoOutputFile", "%target%", *Target\Name$), #FLAG_Error)
+        MessageRequester(#ProductName$, LanguagePattern("Compiler", "NoOutputFile", "%target%", *Target\Name$), #FLAG_Error, WindowID(#WINDOW_Build))
       EndIf
       ProcedureReturn ""
     Else
@@ -469,7 +469,7 @@ Procedure.s BuildProjectTarget(*Target.CompileTarget, Mode, CreateExe, CheckSynt
       ElseIf UseProjectBuildWindow
         BuildLogEntry(Message$)
       Else
-        MessageRequester("Information", Message$, #FLAG_Info)
+        MessageRequester("Information", Message$, #FLAG_Info, WindowID(#WINDOW_Build))
       EndIf
     Else
     CompilerEndIf
@@ -586,7 +586,7 @@ Procedure BuildWindowEvents(EventID)
           EndIf
           
           If FileSize(FileName$) <> -1
-            result = MessageRequester(#ProductName$,Language("FileStuff","FileExists")+#NewLine+Language("FileStuff","OverWrite"), #FLAG_Warning|#PB_MessageRequester_YesNoCancel)
+            result = MessageRequester(#ProductName$,Language("FileStuff","FileExists")+#NewLine+Language("FileStuff","OverWrite"), #FLAG_Warning|#PB_MessageRequester_YesNoCancel, WindowID(#WINDOW_Build))
             If result = #PB_MessageRequester_Cancel
               Break ; abort
             ElseIf result = #PB_MessageRequester_No
@@ -602,7 +602,7 @@ Procedure BuildWindowEvents(EventID)
             Next i
             CloseFile(File)
           Else
-            MessageRequester(#ProductName$,LanguagePattern("Debugger","SaveError", "%filename%", FileName$), #FLAG_Error)
+            MessageRequester(#ProductName$,LanguagePattern("Debugger","SaveError", "%filename%", FileName$), #FLAG_Error, WindowID(#WINDOW_Build))
           EndIf
           
           Break ; if we got here, then do not try again
@@ -1075,13 +1075,13 @@ Procedure CompileRun(CheckSyntax)
           EndIf
           
         Else
-          MessageRequester(#ProductName$, "Critical Error! Out of Memory!", #FLAG_ERROR)
+          MessageRequester(#ProductName$, "Critical Error! Out of Memory!", #FLAG_ERROR, WindowID(#WINDOW_Build))
           ActivateMainWindow()
         EndIf
         
         
       Else
-        MessageRequester(#ProductName$, Language("Compiler", "ReadMainError")+#NewLine+*ActiveSource\MainFile$, #FLAG_ERROR)
+        MessageRequester(#ProductName$, Language("Compiler", "ReadMainError")+#NewLine+*ActiveSource\MainFile$, #FLAG_ERROR, WindowID(#WINDOW_Build))
         ActivateMainWindow()
       EndIf
       
@@ -1118,13 +1118,13 @@ Procedure CompileRun(CheckSyntax)
         EndIf
         
       Else
-        MessageRequester(#ProductName$, Language("Compiler","SaveTempError")+#NewLine+TempPath$+"PB_EditorOutput.pb", #FLAG_ERROR)
+        MessageRequester(#ProductName$, Language("Compiler","SaveTempError")+#NewLine+TempPath$+"PB_EditorOutput.pb", #FLAG_ERROR, WindowID(#WINDOW_Build))
         HideCompilerWindow()
       EndIf
     EndIf
     
   Else
-    MessageRequester(#ProductName$, Language("Compiler","NotReady"))
+    MessageRequester(#ProductName$, Language("Compiler","NotReady"), 0, WindowID(#WINDOW_Build))
     ActivateMainWindow()
   EndIf
   
@@ -1204,7 +1204,7 @@ Procedure CreateExecutable()
       EndIf
       
       If *MainSource = 0
-        MessageRequester("Error", "Can't load the main file to create the executable: "+MainFileName$)
+        MessageRequester("Error", "Can't load the main file to create the executable: "+MainFileName$, 0, WindowID(#WINDOW_Build))
         ProcedureReturn
       EndIf
       
@@ -1230,7 +1230,7 @@ Procedure CreateExecutable()
       ; the source must be saved to the temp path
       ;
       If SaveTempFile(TempPath$ + "PB_EditorOutput.pb") = 0
-        MessageRequester(#ProductName$, Language("Compiler","SaveTempError")+#NewLine+TempPath$+"PB_EditorOutput.pb", #FLAG_ERROR)
+        MessageRequester(#ProductName$, Language("Compiler","SaveTempError")+#NewLine+TempPath$+"PB_EditorOutput.pb", #FLAG_ERROR, WindowID(#WINDOW_Build))
         *InitialActiveSource = *ActiveSource
         ProcedureReturn
       EndIf
@@ -1238,9 +1238,9 @@ Procedure CreateExecutable()
       CompilerIf #Demo
         If *ActiveSource\ExecutableFormat = 2 ; shared dll
           CompilerIf #CompileWindows
-            MessageRequester("Information", "DLL creation is not available in the demo version.")
+            MessageRequester("Information", "DLL creation is not available in the demo version.", 0, WindowID(#WINDOW_Build))
           CompilerElse
-            MessageRequester("Information", "SO Library creation is not available in the demo version.")
+            MessageRequester("Information", "SO Library creation is not available in the demo version.", 0, WindowID(#WINDOW_Build))
           CompilerEndIf
         Else
         CompilerEndIf
@@ -1304,7 +1304,7 @@ Procedure CreateExecutable()
     CompilerEndIf
     
   Else
-    MessageRequester(#ProductName$, Language("Compiler","NotReady"))
+    MessageRequester(#ProductName$, Language("Compiler","NotReady"), 0, WindowID(#WINDOW_Build))
   EndIf
   
 EndProcedure
@@ -1326,7 +1326,7 @@ Procedure Run()
     AddTools_Execute(#TRIGGER_ProgramRun, *ActiveSource)
     Compiler_Run(*ActiveSource, #False)  ; not the first time this is run
   Else
-    MessageRequester(#ProductName$, Language("Compiler","NotReady"))
+    MessageRequester(#ProductName$, Language("Compiler","NotReady"), 0, WindowID(#WINDOW_Build))
   EndIf
   
 EndProcedure
@@ -1395,7 +1395,7 @@ Procedure CompileRunProject(CheckSyntax)
     EndIf
     
   Else
-    MessageRequester(#ProductName$, Language("Compiler","NotReady"))
+    MessageRequester(#ProductName$, Language("Compiler","NotReady"), 0, WindowID(#WINDOW_Build))
     ActivateMainWindow()
   EndIf
   
@@ -1417,7 +1417,7 @@ Procedure RunProject()
     
     Compiler_Run(*DefaultTarget, #False) ; run (not for the first time)
   Else
-    MessageRequester(#ProductName$, Language("Compiler","NotReady"))
+    MessageRequester(#ProductName$, Language("Compiler","NotReady"), 0, WindowID(#WINDOW_Build))
   EndIf
   
 EndProcedure
@@ -1449,7 +1449,7 @@ Procedure CreateExecutableProject()
     EndIf
     
   Else
-    MessageRequester(#ProductName$, Language("Compiler","NotReady"))
+    MessageRequester(#ProductName$, Language("Compiler","NotReady"), 0, WindowID(#WINDOW_Build))
   EndIf
   
 EndProcedure
@@ -1465,7 +1465,7 @@ Procedure BuildTarget(*Target.CompileTarget)
   If CompilerReady And CompilerBusy = 0
     OpenBuildWindow(*Targets())
   Else
-    MessageRequester(#ProductName$, Language("Compiler","NotReady"))
+    MessageRequester(#ProductName$, Language("Compiler","NotReady"), 0, WindowID(#WINDOW_Build))
   EndIf
 EndProcedure
 
@@ -1487,11 +1487,11 @@ Procedure BuildAll()
     If ListSize(*Targets()) <> 0
       OpenBuildWindow(*Targets()) ; this function does all the work
     Else
-      MessageRequester(#ProductName$, Language("Compiler","NoBuildTargets"))
+      MessageRequester(#ProductName$, Language("Compiler","NoBuildTargets"), 0, WindowID(#WINDOW_Build))
     EndIf
     
   Else
-    MessageRequester(#ProductName$, Language("Compiler","NotReady"))
+    MessageRequester(#ProductName$, Language("Compiler","NotReady"), 0, WindowID(#WINDOW_Build))
   EndIf
 EndProcedure
 

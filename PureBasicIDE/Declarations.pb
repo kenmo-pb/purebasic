@@ -549,9 +549,14 @@ Declare ProjectPanelMenuEvent(MenuItemID)
 
 Declare CloseSplashScreen()
 
-Procedure MessageRequesterSafe(Title$, Text$, Flags=0)
+Procedure MessageRequesterSafe(Title$, Text$, Flags=0, ParentID=0)
   CloseSplashScreen()
-  ProcedureReturn MessageRequester(Title$, Text$, Flags)
+  If ParentID = 0
+    If IsWindow(#WINDOW_Main)
+      ParentID = WindowID(#WINDOW_Main)
+    EndIf
+  EndIf
+  ProcedureReturn MessageRequester(Title$, Text$, Flags, ParentID)
 EndProcedure
 
 Macro MessageRequester

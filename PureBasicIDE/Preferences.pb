@@ -3702,7 +3702,7 @@ Procedure ExportPreferences()
   FileName$ = ResolveRelativePath(CurrentDirectory$, GetGadgetText(#GADGET_Preferences_ExportFile))
   
   If FileSize(FileName$) >= 0
-    If MessageRequester(#ProductName$,Language("FileStuff","FileExists")+#NewLine+Language("FileStuff","OverWrite"), #FLAG_Warning|#PB_MessageRequester_YesNo) = #PB_MessageRequester_No
+    If MessageRequester(#ProductName$,Language("FileStuff","FileExists")+#NewLine+Language("FileStuff","OverWrite"), #FLAG_Warning|#PB_MessageRequester_YesNo, WindowID(#WINDOW_Preferences)) = #PB_MessageRequester_No
       ProcedureReturn
     EndIf
   EndIf
@@ -3803,9 +3803,9 @@ Procedure ExportPreferences()
     EndIf
     
     ClosePreferences()
-    MessageRequester(#ProductName$, Language("Preferences", "ExportComplete"), #FLAG_Info)
+    MessageRequester(#ProductName$, Language("Preferences", "ExportComplete"), #FLAG_Info, WindowID(#WINDOW_Preferences))
   Else
-    MessageRequester(#ProductName$, LanguagePattern("Misc", "PreferenceError", "%filename%", FileName$), #FLAG_ERROR)
+    MessageRequester(#ProductName$, LanguagePattern("Misc", "PreferenceError", "%filename%", FileName$), #FLAG_ERROR, WindowID(#WINDOW_Preferences))
   EndIf
   
 EndProcedure
@@ -3852,9 +3852,9 @@ Procedure ImportPreferences()
           UpdatePreferenceSyntaxColor(i, Colors(i)\PrefsValue)
         Next i
         
-        MessageRequester(#ProductName$, Language("Preferences", "ImportComplete"), #FLAG_Info)
+        MessageRequester(#ProductName$, Language("Preferences", "ImportComplete"), #FLAG_Info, WindowID(#WINDOW_Preferences))
       Else
-        MessageRequester(#ProductName$, Language("Preferences", "UnknownPrefFormat"), #FLAG_Error)
+        MessageRequester(#ProductName$, Language("Preferences", "UnknownPrefFormat"), #FLAG_Error, WindowID(#WINDOW_Preferences))
       EndIf
       
     Else ; ok, it is our own format
@@ -3947,7 +3947,7 @@ Procedure ImportPreferences()
         Next i
         
       EndIf
-      MessageRequester(#ProductName$, Language("Preferences", "ImportComplete"), #FLAG_Info)
+      MessageRequester(#ProductName$, Language("Preferences", "ImportComplete"), #FLAG_Info, WindowID(#WINDOW_Preferences))
       
       
     EndIf
@@ -3955,7 +3955,7 @@ Procedure ImportPreferences()
     ClosePreferences()
     
   Else
-    MessageRequester(#ProductName$, Language("Misc", "ReadError")+".", #FLAG_ERROR)
+    MessageRequester(#ProductName$, Language("Misc", "ReadError")+".", #FLAG_ERROR, WindowID(#WINDOW_Preferences))
   EndIf
   
 EndProcedure
@@ -3980,7 +3980,7 @@ Procedure CheckImportPreferencesFile() ; open the file, do not import anything
       Else
         DisableGadget(#GADGET_Preferences_Import, 1) ; this file is unknown
         DisableGadget(#GADGET_Preferences_ImpColor, 1)
-        MessageRequester(#ProductName$, Language("Preferences", "UnknownPrefFormat"), #FLAG_Error)
+        MessageRequester(#ProductName$, Language("Preferences", "UnknownPrefFormat"), #FLAG_Error, WindowID(#WINDOW_Preferences))
       EndIf
       
     Else ; our own export format it is.
@@ -4015,7 +4015,7 @@ Procedure CheckImportPreferencesFile() ; open the file, do not import anything
     
   Else
     
-    MessageRequester(#ProductName$, Language("Misc", "ReadError")+".")
+    MessageRequester(#ProductName$, Language("Misc", "ReadError")+".", #FLAG_ERROR, WindowID(#WINDOW_Preferences))
     DisableGadget(#GADGET_Preferences_Import, 1)
     DisableGadget(#GADGET_Preferences_ImpShortcut, 1)
     DisableGadget(#GADGET_Preferences_ImpToolbar, 1)
@@ -4764,7 +4764,7 @@ Procedure PreferencesWindowEvents(EventID)
           EndIf
           UpdatePrefsToolbarList()
         Else
-          MessageRequester("PureBasic", Language("Preferences","MaxItems"), #FLAG_Error)
+          MessageRequester("PureBasic", Language("Preferences","MaxItems"), #FLAG_Error, WindowID(#WINDOW_Preferences))
         EndIf
         
       Case #GADGET_Preferences_ToolbarSet
@@ -5038,7 +5038,7 @@ Procedure PreferencesWindowEvents(EventID)
           If IsShortcutUsed(Shortcut, index, 0)
             ; Shortcut is already used... ask if user would like to reassign it now
             Text$ = Language("Shortcuts","AllreadyUsed")+#NewLine+Chr(34)+GetShortcutOwner(Shortcut)+Chr(34)+#NewLine+#NewLine+Language("Shortcuts","ReassignPrompt")
-            If MessageRequester(#ProductName$, Text$, #FLAG_Question | #PB_MessageRequester_YesNo) = #PB_MessageRequester_Yes ; DO NOT FIX TYPO: AllreadyUsed
+            If MessageRequester(#ProductName$, Text$, #FLAG_Question | #PB_MessageRequester_YesNo, WindowID(#WINDOW_Preferences)) = #PB_MessageRequester_Yes ; DO NOT FIX TYPO: AllreadyUsed
               For i = 0 To #MENU_LastShortcutItem
                 If Prefs_KeyboardShortcuts(i) = Shortcut
                   Prefs_KeyboardShortcuts(i) = 0
@@ -5331,12 +5331,12 @@ Procedure PreferencesWindowEvents(EventID)
             
           Else
             ; too many marker issues
-            MessageRequester(#ProductName$, ReplaceString(Language("Preferences","IssueCodeLineLimit"), "%limit%", Str(#MAX_IssueMarkers)), #FLAG_Error)
+            MessageRequester(#ProductName$, ReplaceString(Language("Preferences","IssueCodeLineLimit"), "%limit%", Str(#MAX_IssueMarkers)), #FLAG_Error, WindowID(#WINDOW_Preferences))
           EndIf
           
         Else
           ; regex is invalid
-          MessageRequester(#ProductName$, Language("Preferences","InvalidExpr") + #NewLine + RegularExpressionError(), #FLAG_Error)
+          MessageRequester(#ProductName$, Language("Preferences","InvalidExpr") + #NewLine + RegularExpressionError(), #FLAG_Error, WindowID(#WINDOW_Preferences))
         EndIf
         
       Case #GADGET_Preferences_DeleteIssue

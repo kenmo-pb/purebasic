@@ -553,11 +553,11 @@ Procedure GrepWindowEvents(EventID)
               DisableGrepWindow(#False)
               
             Else
-              MessageRequester(Language("Find","Info"), Language("Find","NeedString")+".", #FLAG_WARNING)
+              MessageRequester(Language("Find","Info"), Language("Find","NeedString")+".", #FLAG_WARNING, WindowID(#WINDOW_Grep))
               SetActiveGadget(#GADGET_Grep_FindWord)
             EndIf
           Else
-            MessageRequester(Language("Find","Info"), Language("Find","NeedPath")+".", #FLAG_WARNING)
+            MessageRequester(Language("Find","Info"), Language("Find","NeedPath")+".", #FLAG_WARNING, WindowID(#WINDOW_Grep))
             SetActiveGadget(#GADGET_Grep_Directory)
           EndIf
           

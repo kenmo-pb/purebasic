@@ -805,7 +805,7 @@ Procedure AddTools_EditWindowEvents(EventID)
         For i = 1 To 10
           Info$ + Language("AddTools","Argument"+Str(i)) + #NewLine
         Next i
-        MessageRequester(Language("AddTools","Info"), Info$, #FLAG_Info)
+        MessageRequester(Language("AddTools","Info"), Info$, #FLAG_Info, WindowID(#WINDOW_EditTools))
         
         
       Case #GADGET_EditTools_ChooseWorkingDir
@@ -819,10 +819,10 @@ Procedure AddTools_EditWindowEvents(EventID)
         ; first check if all the contents are ok
         ;
         If Trim(GetGadgetText(#GADGET_EditTools_CommandLine)) = ""
-          MessageRequester(#ProductName$, Language("AddTools","NoCommandLine"), #FLAG_Info)
+          MessageRequester(#ProductName$, Language("AddTools","NoCommandLine"), #FLAG_Info, WindowID(#WINDOW_EditTools))
           
         ElseIf Trim(GetGadgetText(#GADGET_EditTools_MenuEntry)) = ""
-          MessageRequester(#ProductName$, Language("AddTools","NoName"), #FLAG_Info)
+          MessageRequester(#ProductName$, Language("AddTools","NoName"), #FLAG_Info, WindowID(#WINDOW_EditTools))
           
         Else
           index = ListIndex(ToolsList_Edit())
@@ -855,7 +855,7 @@ Procedure AddTools_EditWindowEvents(EventID)
           EndIf
           
           If IsShortcutUsed(Shortcut, -1, *CurrentTool)
-            MessageRequester(#ProductName$, Language("Shortcuts","AllreadyUsed")+#NewLine+Chr(34)+GetShortcutOwner(Shortcut)+Chr(34), #FLAG_Info) ; DO NOT FIX TYPO: AllreadyUsed
+            MessageRequester(#ProductName$, Language("Shortcuts","AllreadyUsed")+#NewLine+Chr(34)+GetShortcutOwner(Shortcut)+Chr(34), #FLAG_Info, WindowID(#WINDOW_EditTools)) ; DO NOT FIX TYPO: AllreadyUsed
             error = 1
           Else
             error = 0
@@ -865,7 +865,7 @@ Procedure AddTools_EditWindowEvents(EventID)
             If IsNewTool = 0 And ListIndex(ToolsList_Edit()) = index
               ; no checks in this case
             ElseIf Name$ = LCase(Trim(ToolsList_Edit()\MenuItemName$))
-              MessageRequester(#ProductName$, Language("AddTools","NameExists"), #FLAG_Info)
+              MessageRequester(#ProductName$, Language("AddTools","NameExists"), #FLAG_Info, WindowID(#WINDOW_EditTools))
               error = 1
               Break
               
@@ -1119,7 +1119,7 @@ Procedure AddTools_WindowEvents(EventID)
             SavePrefs = 1
           Else
             SavePrefs = 0
-            MessageRequester(#ProductName$, LanguagePattern("Misc","PreferenceError", "%filename%", AddToolsFile$), #FLAG_Error)
+            MessageRequester(#ProductName$, LanguagePattern("Misc","PreferenceError", "%filename%", AddToolsFile$), #FLAG_Error, WindowID(#WINDOW_AddTools))
           EndIf
           
           AddTools_PatternStrings$ = ""

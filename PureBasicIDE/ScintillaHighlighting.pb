@@ -20,6 +20,13 @@ CompilerIf #CompileWindows | #CompileLinux | #CompileMac
   Structure SCI_TextToFind Extends SCTextToFind
   EndStructure
   
+  Procedure FindWindowElseMainWindow()
+    If IsWindow(#WINDOW_Find)
+      ProcedureReturn #WINDOW_Find
+    EndIf
+    ProcedureReturn #WINDOW_Main
+  EndProcedure
+  
   ; Fix for the #SCI_COUNTCHARACTERS message. Don't use that message directly because of the below newline trouble
   ; (Fix no longer needed in newer Scintilla versions)
   ;
@@ -4023,19 +4030,19 @@ CompilerIf #CompileWindows | #CompileLinux | #CompileMac
             ; We use OkCancel instead of YesNo as the 'Esc' key is handled with a 'Cancel' button
             ;
             If Reverse
-              If FindAutoWrap Or (MessageRequester(#ProductName$, Language("Find","NoMoreMatches")+"."+#NewLine+Language("Find","ContinueSearchReverse"), #FLAG_Question|#PB_MessageRequester_OkCancel) = #PB_MessageRequester_ResultOk)
+              If FindAutoWrap Or (MessageRequester(#ProductName$, Language("Find","NoMoreMatches")+"."+#NewLine+Language("Find","ContinueSearchReverse"), #FLAG_Question|#PB_MessageRequester_OkCancel, WindowID(FindWindowElseMainWindow())) = #PB_MessageRequester_ResultOk)
                 Find\chrg\cpMin = SendEditorMessage(#SCI_GETTEXTLENGTH, 0, 0)
                 Find\chrg\cpMax = 0
                 Result = 0 ; do not end the loop yet!
               EndIf
             Else
-              If FindAutoWrap Or (MessageRequester(#ProductName$, Language("Find","NoMoreMatches")+"."+#NewLine+Language("Find","ContinueSearch"), #FLAG_Question|#PB_MessageRequester_OkCancel) = #PB_MessageRequester_ResultOk)
+              If FindAutoWrap Or (MessageRequester(#ProductName$, Language("Find","NoMoreMatches")+"."+#NewLine+Language("Find","ContinueSearch"), #FLAG_Question|#PB_MessageRequester_OkCancel, WindowID(FindWindowElseMainWindow())) = #PB_MessageRequester_ResultOk)
                 Find\chrg\cpMin = 0
                 Result = 0 ; do not end the loop yet!
               EndIf
             EndIf
           Else
-            MessageRequester(#ProductName$, Language("Find","NoMoreMatches")+".", #FLAG_Info)
+            MessageRequester(#ProductName$, Language("Find","NoMoreMatches")+".", #FLAG_Info, WindowID(FindWindowElseMainWindow()))
           EndIf
           
         ElseIf Result <> -1 And Success = 0 And Mode <> 3
@@ -4073,7 +4080,7 @@ CompilerIf #CompileWindows | #CompileLinux | #CompileMac
             UpdateVariableViewer()
           EndIf
           
-          MessageRequester(#ProductName$, Language("Find","SearchComplete")+"."+#NewLine+Str(MatchesFound)+" "+Language("Find","MatchesFound")+".", #FLAG_Info)
+          MessageRequester(#ProductName$, Language("Find","SearchComplete")+"."+#NewLine+Str(MatchesFound)+" "+Language("Find","MatchesFound")+".", #FLAG_Info, WindowID(FindWindowElseMainWindow()))
         EndIf
         
         SetActiveGadget(*ActiveSource\EditorGadget)

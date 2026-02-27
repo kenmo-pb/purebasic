@@ -124,7 +124,7 @@ Procedure SetTargetOptions(*Target.CompileTarget)
     *Compiler.Compiler = FindCompiler(*Target\CompilerVersion$)
     
     If *Compiler = 0
-      MessageRequester(#ProductName$, Language("Compiler","CompilerNotFound")+":"+#NewLine+*Target\CompilerVersion$, #FLAG_Warning)
+      MessageRequester(#ProductName$, Language("Compiler","CompilerNotFound")+":"+#NewLine+*Target\CompilerVersion$, #FLAG_Warning, WindowID(#WINDOW_Option))
       SetGadgetState(#GADGET_Option_SelectCompiler, 0)
     ElseIf *Compiler = @DefaultCompiler
       SetGadgetState(#GADGET_Option_SelectCompiler, 0)
@@ -869,7 +869,7 @@ Procedure OptionWindowEvents(EventID)
                 SetGadgetState(#GADGET_Option_TargetList, ListIndex(ProjectOptionTargets()))
                 UpdateTargetGadgets()
                 
-                If MessageRequester(Language("Compiler","OptionsTitle"), LanguagePattern("Compiler","NoInputFile", "%target%", ProjectOptionTargets()\Name$)+#NewLine+Language("Compiler","SaveAnyway"), #PB_MessageRequester_YesNo|#FLAG_Warning) = #PB_MessageRequester_No
+                If MessageRequester(Language("Compiler","OptionsTitle"), LanguagePattern("Compiler","NoInputFile", "%target%", ProjectOptionTargets()\Name$)+#NewLine+Language("Compiler","SaveAnyway"), #PB_MessageRequester_YesNo|#FLAG_Warning, WindowID(#WINDOW_Option)) = #PB_MessageRequester_No
                   Quit = 0
                   Break
                 EndIf
@@ -1121,7 +1121,7 @@ Procedure OptionWindowEvents(EventID)
             Next ProjectOptionTargets()
             
             If found
-              MessageRequester(Language("Compiler","OptionsTitle"), Language("Compiler","NameExists"))
+              MessageRequester(Language("Compiler","OptionsTitle"), Language("Compiler","NameExists"), 0, WindowID(#WINDOW_Option))
             Else
               If *Options_CurrentTarget
                 GetTargetOptions(*Options_CurrentTarget) ; save old options
@@ -1160,7 +1160,7 @@ Procedure OptionWindowEvents(EventID)
               Next ProjectOptionTargets()
               
               If found
-                MessageRequester(Language("Compiler","OptionsTitle"), Language("Compiler","NameExists"))
+                MessageRequester(Language("Compiler","OptionsTitle"), Language("Compiler","NameExists"), 0, WindowID(#WINDOW_Option))
               Else
                 If *Options_CurrentTarget
                   GetTargetOptions(*Options_CurrentTarget) ; save old options
@@ -1203,7 +1203,7 @@ Procedure OptionWindowEvents(EventID)
               SelectElement(ProjectOptionTargets(), State)
               
               If found
-                MessageRequester(Language("Compiler","OptionsTitle"), Language("Compiler","NameExists"))
+                MessageRequester(Language("Compiler","OptionsTitle"), Language("Compiler","NameExists"), 0, WindowID(#WINDOW_Option))
               Else
                 ProjectOptionTargets()\Name$ = Name$
                 SetGadgetItemText(#GADGET_Option_TargetList, State, Name$, 0)
@@ -1214,7 +1214,7 @@ Procedure OptionWindowEvents(EventID)
         Case #GADGET_Option_RemoveTarget
           State = GetGadgetState(#GADGET_Option_TargetList)
           ; cannot delete the last target
-          If State <> -1 And ListSize(ProjectOptionTargets()) > 1 And MessageRequester(Language("Compiler","OptionsTitle"), Language("Compiler","ConfirmTargetDelete"), #PB_MessageRequester_YesNo|#FLAG_Question) = #PB_MessageRequester_Yes
+          If State <> -1 And ListSize(ProjectOptionTargets()) > 1 And MessageRequester(Language("Compiler","OptionsTitle"), Language("Compiler","ConfirmTargetDelete"), #PB_MessageRequester_YesNo|#FLAG_Question, WindowID(#WINDOW_Option)) = #PB_MessageRequester_Yes
             If State > 0
               NewState = State - 1
             Else
@@ -1399,7 +1399,7 @@ Procedure OptionWindowEvents(EventID)
               Text$ + Language("Resources","Token"+Str(i)) + #NewLine
             Next i
             Text$ + Language("Resources","DateTokens")
-            MessageRequester(Language("Resources","Tokens"), Text$, #FLAG_Info)
+            MessageRequester(Language("Resources","Tokens"), Text$, #FLAG_Info, WindowID(#WINDOW_Option))
             
           CompilerEndIf
           
@@ -1446,7 +1446,7 @@ Procedure UpdateOptionWindow()
     *Compiler.Compiler = FindCompiler(OldSelection$)
     
     If *Compiler = 0
-      MessageRequester(#ProductName$, Language("Compiler","CompilerNotFound")+":"+#NewLine+OldSelection$, #FLAG_Warning)
+      MessageRequester(#ProductName$, Language("Compiler","CompilerNotFound")+":"+#NewLine+OldSelection$, #FLAG_Warning, WindowID(#WINDOW_Option))
       SetGadgetState(#GADGET_Option_SelectCompiler, 0)
     ElseIf *Compiler = @DefaultCompiler
       SetGadgetState(#GADGET_Option_SelectCompiler, 0)

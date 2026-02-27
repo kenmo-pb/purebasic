@@ -736,7 +736,7 @@ Procedure Template_EventHandler(*Entry.ToolsPanelEntry, EventGadgetID)
         If Template()\IsDirectory = 0
           
           If Template_AskDelete
-            If MessageRequester(#ProductName$, Language("Templates", "DeleteQuestion"), #FLAG_QUESTION|#PB_MessageRequester_YesNo) = #PB_MessageRequester_Yes
+            If MessageRequester(#ProductName$, Language("Templates", "DeleteQuestion"), #FLAG_QUESTION|#PB_MessageRequester_YesNo, WindowID(#WINDOW_Template)) = #PB_MessageRequester_Yes
               Template_SaveState()
               DeleteElement(Template())
               Template_FillTree()
@@ -815,7 +815,7 @@ Procedure Template_EventHandler(*Entry.ToolsPanelEntry, EventGadgetID)
           EndIf
           
           If delete = 0
-            If MessageRequester(#ProductName$, Language("Templates","DeleteNonEmpty"), #FLAG_QUESTION|#PB_MessageRequester_YesNo) = #PB_MessageRequester_Yes
+            If MessageRequester(#ProductName$, Language("Templates","DeleteNonEmpty"), #FLAG_QUESTION|#PB_MessageRequester_YesNo, WindowID(#WINDOW_Template)) = #PB_MessageRequester_Yes
               delete = 1
             EndIf
           EndIf

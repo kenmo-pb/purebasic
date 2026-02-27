@@ -408,7 +408,7 @@ Procedure StartCompiler(*Compiler.Compiler)
       CompilerProgram = 0
       
       If CommandlineBuild = 0
-        MessageRequester(#ProductName$, LanguagePattern("Compiler", "ResponseError", "%product%", #ProductName$), #FLAG_Error)
+        MessageRequester(#ProductName$, LanguagePattern("Compiler", "ResponseError", "%product%", #ProductName$), #FLAG_Error, WindowID(#WINDOW_Main))
       Else
         PrintN(LanguagePattern("Compiler", "ResponseError", "%product%", #ProductName$))
         End 1
@@ -460,7 +460,7 @@ Procedure WaitForCompilerReady(NoReadyCall = 0)
           BuildLogEntry(Language("Compiler", "SubSystemError")+": "+Name$)
         Else
           HideCompilerWindow()
-          MessageRequester(#ProductName$ + " - Compiler Error", Language("Compiler", "SubSystemError")+": "+Name$, #FLAG_ERROR)
+          MessageRequester(#ProductName$ + " - Compiler Error", Language("Compiler", "SubSystemError")+": "+Name$, #FLAG_ERROR, WindowID(#WINDOW_Main))
         EndIf
         
         ; No kill here as the compiler terminates itself
@@ -481,7 +481,7 @@ Procedure WaitForCompilerReady(NoReadyCall = 0)
             BuildLogEntry(Message$)
           Else
             HideCompilerWindow()
-            MessageRequester(#ProductName$ + " - Compiler Error", Message$, #FLAG_ERROR)
+            MessageRequester(#ProductName$ + " - Compiler Error", Message$, #FLAG_ERROR, WindowID(#WINDOW_Main))
           EndIf
         EndIf
         
@@ -854,7 +854,7 @@ Procedure Compiler_SetCompiler(*Target.CompileTarget)
       ElseIf UseProjectBuildWindow
         BuildLogEntry(Language("Compiler","CompilerNotFound")+": "+*Target\CompilerVersion$)
       Else
-        MessageRequester(#ProductName$, Language("Compiler","CompilerNotFound")+":"+#NewLine+*Target\CompilerVersion$)
+        MessageRequester(#ProductName$, Language("Compiler","CompilerNotFound")+":"+#NewLine+*Target\CompilerVersion$, 0, WindowID(#WINDOW_Main))
       EndIf
       
       ProcedureReturn #False
@@ -926,7 +926,7 @@ Procedure Compiler_SetCompiler(*Target.CompileTarget)
         ElseIf UseProjectBuildWindow
           BuildLogEntry(Language("Compiler","StartError")+": "+*Compiler\VersionString$)
         Else
-          MessageRequester(#ProductName$, Language("Compiler","StartError")+": "+*Compiler\VersionString$, #FLAG_Error)
+          MessageRequester(#ProductName$, Language("Compiler","StartError")+": "+*Compiler\VersionString$, #FLAG_Error, WindowID(#WINDOW_Main))
         EndIf
       EndIf
       
@@ -986,7 +986,7 @@ Procedure Compiler_HandleCompilerResponse(*Target.CompileTarget)
       
       ; Again, this is treated as a fatal error, so even the build mode gets a requester
       If CommandlineBuild = 0
-        MessageRequester(#ProductName$, Language("Compiler","CompilerCrash"), #FLAG_Error)
+        MessageRequester(#ProductName$, Language("Compiler","CompilerCrash"), #FLAG_Error, WindowID(#WINDOW_Main))
       EndIf
       CompilationAborted = #True ; causes a compiler restart and ensures a proper compilation abort
     EndIf
@@ -1051,7 +1051,7 @@ Procedure Compiler_HandleCompilerResponse(*Target.CompileTarget)
         DisableMenuAndToolbarItem(#MENU_CompileRun, 0)
         DisableMenuAndToolbarItem(#MENU_SyntaxCheck, 0)
       Else
-        MessageRequester(#ProductName$, Language("Compiler","RestartError"), #FLAG_Error)
+        MessageRequester(#ProductName$, Language("Compiler","RestartError"), #FLAG_Error, WindowID(#WINDOW_Main))
       EndIf
       
       HideCompilerWindow()
@@ -1439,7 +1439,7 @@ Procedure Compiler_HandleCompilerResponse(*Target.CompileTarget)
       
       ; now the message
       If DisplayErrorWindow
-        MessageRequester(#ProductName$, Line$, #FLAG_Error)
+        MessageRequester(#ProductName$, Line$, #FLAG_Error, WindowID(#WINDOW_Main))
       EndIf
       
       If IsWindow(#WINDOW_MacroError)
@@ -1510,7 +1510,7 @@ Procedure Compiler_HandleCompilerResponse(*Target.CompileTarget)
         Message$ + "..." + #NewLine + LastLine$ ; Add the last line if it has been truncated, as it can be useful
       EndIf
       
-      MessageRequester(#ProductName$ + " - "+Type$, Message$, #FLAG_ERROR)
+      MessageRequester(#ProductName$ + " - "+Type$, Message$, #FLAG_ERROR, WindowID(#WINDOW_Main))
       ActivateMainWindow()
     EndIf
     
@@ -1857,7 +1857,7 @@ Procedure Compiler_Run(*Target.CompileTarget, IsFirstRun)
             EndIf
           EndIf
         Else
-          MessageRequester("Error", "Invalid server address ("+ WebServerAddress$ + "). It should be specified as 'address:port'", #FLAG_Error)
+          MessageRequester("Error", "Invalid server address ("+ WebServerAddress$ + "). It should be specified as 'address:port'", #FLAG_Error, WindowID(#WINDOW_Main))
           Error = #True
         EndIf
         
@@ -1869,7 +1869,7 @@ Procedure Compiler_Run(*Target.CompileTarget, IsFirstRun)
       ; Check than no server use this adress already (ie: 2 different sources  with the same *Target\WebServerAddress$
       ForEach WebLaunchedServers()
         If WebLaunchedServers() = WebServerAddress$
-          MessageRequester("Error", "Invalid server address ("+ WebServerAddress$ + "). This adress is already in use in another spiderbasic source.", #FLAG_Error)
+          MessageRequester("Error", "Invalid server address ("+ WebServerAddress$ + "). This adress is already in use in another spiderbasic source.", #FLAG_Error, WindowID(#WINDOW_Main))
           Error = #True
         EndIf
       Next
@@ -1908,7 +1908,7 @@ Procedure Compiler_Run(*Target.CompileTarget, IsFirstRun)
           WebLaunchedServers(RootPath$) = WebServerAddress$
         Else
           CloseProgram(MongooseProgram)
-          MessageRequester("Error", "Can't start mongoose on address "+WebServerAddress$+" (may be the port '"+Str(OptionWebServerPort + WebServerPortIndex)+"' is in use)", #FLAG_Error)
+          MessageRequester("Error", "Can't start mongoose on address "+WebServerAddress$+" (may be the port '"+Str(OptionWebServerPort + WebServerPortIndex)+"' is in use)", #FLAG_Error, WindowID(#WINDOW_Main))
         EndIf
       EndIf
     EndIf
@@ -2021,7 +2021,7 @@ Procedure Compiler_Run(*Target.CompileTarget, IsFirstRun)
           
           *OldDebugger.DebuggerData = GetDebuggerForFile(*ActiveSource) ; use the *ActiveSource here (also handles projects properly)
           If *OldDebugger And *OldDebugger\CanDestroy = 0
-            If MessageRequester(#ProductName$,Language("Debugger","IsRunning")+#NewLine+Language("Debugger","IsRunning2"), #PB_MessageRequester_YesNo) = #PB_MessageRequester_Yes
+            If MessageRequester(#ProductName$,Language("Debugger","IsRunning")+#NewLine+Language("Debugger","IsRunning2"), #PB_MessageRequester_YesNo, WindowID(#WINDOW_Main)) = #PB_MessageRequester_Yes
               ExecuteStandaloneDebugger(*Target, DebuggerExe$, Executable$, Directory$, DebuggerParams$)
             EndIf
           Else
@@ -2048,7 +2048,7 @@ Procedure Compiler_Run(*Target.CompileTarget, IsFirstRun)
             CompilerEndIf
             
             If *Debugger = 0
-              MessageRequester(#ProductName$,Language("Debugger","ExecuteError"), #FLAG_Error)
+              MessageRequester(#ProductName$,Language("Debugger","ExecuteError"), #FLAG_Error, WindowID(#WINDOW_Main))
             Else
               ; link the debugger with the source (only if no mainfile was used!)
               If *Target\IsProject

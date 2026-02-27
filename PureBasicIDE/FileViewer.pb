@@ -184,10 +184,10 @@ Procedure FileViewer_OpenFile(Filename$)
   
   SizeMB.f = FileSize(FileName$)/(1024*1024)
   If SizeMB > 10 ; = 10 mb is the max size handled by file viewer, or it will take forever to display in our EditorGadget() based hex viewer
-    MessageRequester(#ProductName$, Language("FileViewer","SizeError"), #FLAG_Error|#PB_MessageRequester_Ok)
+    MessageRequester(#ProductName$, Language("FileViewer","SizeError"), #FLAG_Error|#PB_MessageRequester_Ok, WindowID(#WINDOW_FileViewer))
     ProcedureReturn
   ElseIf SizeMB > 4 ; = 4 mb check for large files which might take long to load
-    If MessageRequester(#ProductName$, Language("FileViewer","SizeWarning")+" ("+StrF(SizeMB, 1)+" MB)"+#NewLine+Language("FileViewer","SizeQuestion"), #FLAG_Warning|#PB_MessageRequester_YesNo) = #PB_MessageRequester_No
+    If MessageRequester(#ProductName$, Language("FileViewer","SizeWarning")+" ("+StrF(SizeMB, 1)+" MB)"+#NewLine+Language("FileViewer","SizeQuestion"), #FLAG_Warning|#PB_MessageRequester_YesNo, WindowID(#WINDOW_FileViewer)) = #PB_MessageRequester_No
       ProcedureReturn
     EndIf
   EndIf
@@ -236,7 +236,7 @@ Procedure FileViewer_OpenFile(Filename$)
         CloseGadgetList()
         CloseGadgetList()
       Else
-        MessageRequester(#ProductName$, Language("FileStuff","MiscLoadError"), #FLAG_Error)
+        MessageRequester(#ProductName$, Language("FileStuff","MiscLoadError"), #FLAG_Error, WindowID(#WINDOW_FileViewer))
       EndIf
       
       CompilerIf #CompileWindows ; the gtk2 is not working well enough on all machines
@@ -345,12 +345,12 @@ Procedure FileViewer_OpenFile(Filename$)
           
           SetGadgetAttribute(FileViewer()\Gadget, #PB_Editor_ReadOnly, 1)
         Else
-          MessageRequester(#ProductName$, Language("FileStuff","MiscLoadError"), #FLAG_Error)
+          MessageRequester(#ProductName$, Language("FileStuff","MiscLoadError"), #FLAG_Error, WindowID(#WINDOW_FileViewer))
         EndIf
         
         CloseFile(#FILE_FileViewer)
       Else
-        MessageRequester(#ProductName$, Language("FileStuff","MiscLoadError"), #FLAG_Error)
+        MessageRequester(#ProductName$, Language("FileStuff","MiscLoadError"), #FLAG_Error, WindowID(#WINDOW_FileViewer))
       EndIf
     EndIf
     
