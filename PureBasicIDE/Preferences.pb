@@ -5083,7 +5083,7 @@ Procedure PreferencesWindowEvents(EventID)
         EndIf
         
       Case #GADGET_Preferences_GetExportFile
-        File$ = SaveFileRequester(Language("Misc","SaveFile"), GetGadgetText(#GADGET_Preferences_ExportFile), Language("Preferences","PrefExportPattern"), 0)
+        File$ = SaveFileRequester(Language("Misc","SaveFile"), GetGadgetText(#GADGET_Preferences_ExportFile), Language("Preferences","PrefExportPattern"), 0, WindowID(#WINDOW_Preferences))
         If File$ <> ""
           If GetExtensionPart(File$) = ""
             File$ + ".prefs"

@@ -2416,7 +2416,7 @@ Procedure ProjectOptionsEvents(EventID)
           File$ = ResolveRelativePath(GetCurrentDirectory(), File$)
         EndIf
         
-        File$ = SaveFileRequester(Language("Project","TitleSave"), File$, Language("Project","Pattern"), 0)
+        File$ = SaveFileRequester(Language("Project","TitleSave"), File$, Language("Project","Pattern"), 0, WindowID(#WINDOW_Main))
         If File$ <> ""
           If GetExtensionPart(GetFilePart(File$)) = ""
             If SelectedFilePattern() = 0 ; project files
@@ -2523,7 +2523,7 @@ Procedure ProjectOptionsEvents(EventID)
           Path$ = GetPathPart(ProjectFile$)
         EndIf
         
-        FileName$ = SaveFileRequester(Language("FileStuff","SaveFileTitle"), Path$, Language("FileStuff","Pattern"), SelectedFilePattern)
+        FileName$ = SaveFileRequester(Language("FileStuff","SaveFileTitle"), Path$, Language("FileStuff","Pattern"), SelectedFilePattern, WindowID(#WINDOW_Main))
         If FileName$ <> ""
           SelectedFilePattern = SelectedFilePattern()
           

@@ -2293,7 +2293,7 @@ Procedure SaveSourceAs()
     NewSourcePath$ = GetPathPart(NewSourcePath$) ; New file to save, don't specify a filename
   EndIf
   
-  FileName$ = SaveFileRequester(Language("FileStuff","SaveFileTitle"), NewSourcePath$, Language("FileStuff","Pattern"), SelectedFilePattern)
+  FileName$ = SaveFileRequester(Language("FileStuff","SaveFileTitle"), NewSourcePath$, Language("FileStuff","Pattern"), SelectedFilePattern, WindowID(#WINDOW_Main))
   If FileName$ <> ""
     SelectedFilePattern = SelectedFilePattern()
     NewSourcePath$ = GetPathPart(FileName$)

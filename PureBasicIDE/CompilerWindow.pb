@@ -439,7 +439,7 @@ Procedure.s BuildProjectTarget(*Target.CompileTarget, Mode, CreateExe, CheckSynt
       CompilerEndIf
     EndIf
     
-    OutputFile$ = SaveFileRequester(Language("Compiler","CreateExe"), Path$, Pattern$, 0)
+    OutputFile$ = SaveFileRequester(Language("Compiler","CreateExe"), Path$, Pattern$, 0, WindowID(#WINDOW_Main))
     If OutputFile$ = ""
       ProcedureReturn ""
     EndIf
@@ -577,7 +577,7 @@ Procedure BuildWindowEvents(EventID)
         FileName$ = GetPathPart(ProjectFile$)
         Pattern   = 0
         Repeat
-          FileName$ = SaveFileRequester(Language("Debugger","SaveFileTitle"), FileName$, Language("Debugger","SaveFilePattern"), Pattern)
+          FileName$ = SaveFileRequester(Language("Debugger","SaveFileTitle"), FileName$, Language("Debugger","SaveFilePattern"), Pattern, WindowID(#WINDOW_Build))
           Pattern   = SelectedFilePattern()
           If FileName$ = ""
             Break
@@ -1273,7 +1273,7 @@ Procedure CreateExecutable()
           CompilerEndIf
         EndIf
         
-        File$ = SaveFileRequester(Language("Compiler","CreateExe"), Path$, Pattern$, 0)
+        File$ = SaveFileRequester(Language("Compiler","CreateExe"), Path$, Pattern$, 0, WindowID(#WINDOW_Main))
         If File$
           If LCase(Right(File$, Len(Extension$))) <> Extension$ And SelectedFilePattern() <> 1
             File$+Extension$

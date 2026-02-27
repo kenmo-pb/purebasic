@@ -298,7 +298,7 @@ Procedure ExportIssueList()
     Path$ = SourcePath$
   EndIf
   
-  FileName$ = SaveFileRequester(Language("FileStuff","ExportIssueTitle"), Path$, Language("FileStuff","ExportIssuePattern"), 0)
+  FileName$ = SaveFileRequester(Language("FileStuff","ExportIssueTitle"), Path$, Language("FileStuff","ExportIssuePattern"), 0, WindowID(#WINDOW_Main))
   If FileName$ <> ""
     
     If GetExtensionPart(GetFilePart(FileName$)) = "" And SelectedFilePattern() = 0

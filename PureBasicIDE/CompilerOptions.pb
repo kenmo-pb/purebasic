@@ -958,7 +958,7 @@ Procedure OptionWindowEvents(EventID)
               CompilerEndIf
             EndIf
             
-            File$ = SaveFileRequester(Language("Compiler","SetOutputFile"), File$, Pattern$, 0)
+            File$ = SaveFileRequester(Language("Compiler","SetOutputFile"), File$, Pattern$, 0, WindowID(#WINDOW_Option))
             If File$
               If LCase(Right(File$, Len(Extension$))) <> Extension$ And SelectedFilePattern() <> 1
                 File$+Extension$
