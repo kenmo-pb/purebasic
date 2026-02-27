@@ -1732,7 +1732,7 @@ Procedure DiffDialogWindowEvents(EventID)
             Gadget = #GADGET_DiffDialog_File2
           EndIf
           
-          Filename$ = OpenFileRequester(Language("FileStuff","OpenFileTitle"), GetGadgetText(Gadget), Language("FileStuff","Pattern"), DiffOpenPattern)
+          Filename$ = OpenFileRequester(Language("FileStuff","OpenFileTitle"), GetGadgetText(Gadget), Language("FileStuff","Pattern"), DiffOpenPattern, 0, WindowID(#WINDOW_DiffDialog))
           If Filename$
             DiffOpenPattern = SelectedFilePattern()
             SetGadgetText(Gadget, Filename$)

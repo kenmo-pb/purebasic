@@ -2205,7 +2205,7 @@ Procedure LoadSource()
     Path$ = SourcePath$
   EndIf
   
-  FileName$ = OpenFileRequester(Language("FileStuff","OpenFileTitle"), Path$, Language("FileStuff","Pattern"), SelectedFilePattern, #PB_Requester_MultiSelection)
+  FileName$ = OpenFileRequester(Language("FileStuff","OpenFileTitle"), Path$, Language("FileStuff","Pattern"), SelectedFilePattern, #PB_Requester_MultiSelection, WindowID(#WINDOW_Main))
   If FileName$ <> ""
     
     While WindowEvent() : Wend

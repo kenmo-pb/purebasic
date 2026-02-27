@@ -192,7 +192,7 @@ Procedure RelativeFilenameRequester(Gadget, Title$, Filter$)
     File$ = Options_CurrentBasePath$
   EndIf
   
-  File$ = OpenFileRequester(Title$, File$, Filter$, 0)
+  File$ = OpenFileRequester(Title$, File$, Filter$, 0, 0, WindowID(#WINDOW_CreateApp))
   If File$
     SetGadgetText(Gadget, CreateRelativePath(Options_CurrentBasePath$, File$))
   EndIf

@@ -391,7 +391,7 @@ Procedure FileViewerWindowEvents(EventID)
           Pattern$ = RemoveString(Pattern$, ";*.ico")
         CompilerEndIf
         
-        FileName$ = OpenFileRequester(Language("FileStuff","OpenFileTitle"), FileViewerPath$, AddTools_PatternStrings$ + Pattern$, FileViewerPattern, #PB_Requester_MultiSelection)
+        FileName$ = OpenFileRequester(Language("FileStuff","OpenFileTitle"), FileViewerPath$, AddTools_PatternStrings$ + Pattern$, FileViewerPattern, #PB_Requester_MultiSelection, WindowID(#WINDOW_FileViewer))
         If FileName$
           FileViewerPattern = SelectedFilePattern()
           FileViewerPath$   = GetPathPart(FileName$)

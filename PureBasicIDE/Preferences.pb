@@ -4460,7 +4460,7 @@ Procedure PreferencesWindowEvents(EventID)
           CompilerElse
             Pattern$ = ""
           CompilerEndIf
-          Filename$ = OpenFileRequester("Select Web Browser", OptionWebBrowser$, Pattern$, 0)
+          Filename$ = OpenFileRequester("Select Web Browser", OptionWebBrowser$, Pattern$, 0, 0, WindowID(#WINDOW_Preferences))
           If Filename$
             SetGadgetText(#GADGET_Preferences_WebBrowser, Filename$)
           EndIf
@@ -4601,7 +4601,7 @@ Procedure PreferencesWindowEvents(EventID)
         EndIf
         
       Case #GADGET_Preferences_GetKeywordFile
-        File$ = OpenFileRequester(Language("Preferences", "OpenKeywordFile"), GetGadgetText(#GADGET_Preferences_KeywordFile), Language("Compiler", "AllFilesPattern"), 0)
+        File$ = OpenFileRequester(Language("Preferences", "OpenKeywordFile"), GetGadgetText(#GADGET_Preferences_KeywordFile), Language("Compiler", "AllFilesPattern"), 0, 0, WindowID(#WINDOW_Preferences))
         If File$ <> ""
           SetGadgetText(#GADGET_Preferences_KeywordFile, File$)
         EndIf
@@ -4681,7 +4681,7 @@ Procedure PreferencesWindowEvents(EventID)
         CompilerElse
           Pattern$ = RemoveString(RemoveString(Language("Preferences","IconPattern"), "*.ico;"), "*.ico,") ; remove icons
         CompilerEndIf
-        File$ = OpenFileRequester(Language("Preferences","OpenIcon"), GetGadgetText(#GADGET_Preferences_ToolbarIconName), Pattern$, 0)
+        File$ = OpenFileRequester(Language("Preferences","OpenIcon"), GetGadgetText(#GADGET_Preferences_ToolbarIconName), Pattern$, 0, 0, WindowID(#WINDOW_Preferences))
         If File$ <> ""
           SetGadgetText(#GADGET_Preferences_ToolbarIconName, File$)
         EndIf
@@ -5092,7 +5092,7 @@ Procedure PreferencesWindowEvents(EventID)
         EndIf
         
       Case #GADGET_Preferences_GetImportFile
-        File$ = OpenFileRequester(Language("Misc","OpenFile"), GetGadgetText(#GADGET_Preferences_ImportFile), Language("Preferences","PrefExportPattern"), 0)
+        File$ = OpenFileRequester(Language("Misc","OpenFile"), GetGadgetText(#GADGET_Preferences_ImportFile), Language("Preferences","PrefExportPattern"), 0, 0, WindowID(#WINDOW_Preferences))
         If File$ <> ""
           SetGadgetText(#GADGET_Preferences_ImportFile, File$)
           DisableGadget(#GADGET_Preferences_ImpShortcut, 1) ; disable again, as it is a new file
@@ -5164,7 +5164,7 @@ Procedure PreferencesWindowEvents(EventID)
           If File$ = "" : File$ = "pbcompiler" : EndIf
         CompilerEndIf
         
-        File$ = OpenFileRequester(Language("Preferences","SelectCompiler"), File$, Pattern$, 0)
+        File$ = OpenFileRequester(Language("Preferences","SelectCompiler"), File$, Pattern$, 0, 0, WindowID(#WINDOW_Preferences))
         If File$ <> ""
           SetGadgetText(#GADGET_Preferences_CompilerExe, File$)
         EndIf

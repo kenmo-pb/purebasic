@@ -635,7 +635,7 @@ Procedure ProjectPanelMenuEvent(MenuItemID)
       Next *Files()
       
     Case #MENU_ProjectPanel_Add
-      FileName$ = OpenFileRequester(Language("FileStuff","OpenFileTitle"), GetPathPart(ProjectFile$), Language("FileStuff","Pattern"), SelectedFilePattern, #PB_Requester_MultiSelection)
+      FileName$ = OpenFileRequester(Language("FileStuff","OpenFileTitle"), GetPathPart(ProjectFile$), Language("FileStuff","Pattern"), SelectedFilePattern, #PB_Requester_MultiSelection, WindowID(#WINDOW_Main))
       If FileName$ <> ""
         SelectedFilePattern = SelectedFilePattern()
         

@@ -7860,7 +7860,7 @@ Procedure FD_Event(EventID, EventGadgetID, EventType)
                       EndIf
                       
                     Case #Form_Type_Img, #Form_Type_ButtonImg
-                      file.s = OpenFileRequester(Language("Form", "SelectImage"),"",Language("Form", "MaskAllFiles"),0)
+                      file.s = OpenFileRequester(Language("Form", "SelectImage"),"",Language("Form", "MaskAllFiles"),0, 0, WindowID(#WINDOW_Main))
                       
                       If file
                         ImageManager(file)
@@ -7918,7 +7918,7 @@ Procedure FD_Event(EventID, EventGadgetID, EventType)
               
               Select row
                 Case 3 ; select image
-                  file.s = OpenFileRequester(Language("Form", "SelectImage"),"",Language("Form", "MaskAllFiles"),0)
+                  file.s = OpenFileRequester(Language("Form", "SelectImage"),"",Language("Form", "MaskAllFiles"),0, 0, WindowID(#WINDOW_Main))
                   If file
                     FormAddUndoAction(1,FormWindows(),-1,0,0,1)
                     img = AddImage(file)
@@ -7939,7 +7939,7 @@ Procedure FD_Event(EventID, EventGadgetID, EventType)
               
               Select row
                 Case 3 ; select image
-                  file.s = OpenFileRequester(Language("Form", "SelectImage"),"",Language("Form", "MaskAllFiles"),0)
+                  file.s = OpenFileRequester(Language("Form", "SelectImage"),"",Language("Form", "MaskAllFiles"),0, 0, WindowID(#WINDOW_Main))
                   If file
                     FormAddUndoAction(1,FormWindows(),-1,0,0,-1,1)
                     img = AddImage(file)
@@ -7960,7 +7960,7 @@ Procedure FD_Event(EventID, EventGadgetID, EventType)
               
               Select row
                 Case 5 ; select image
-                  file.s = OpenFileRequester(Language("Form", "SelectImage"),"",Language("Form", "MaskAllFiles"),0)
+                  file.s = OpenFileRequester(Language("Form", "SelectImage"),"",Language("Form", "MaskAllFiles"),0, 0, WindowID(#WINDOW_Main))
                   
                   If file
                     ImageManager(file)
@@ -8002,7 +8002,7 @@ Procedure FD_Event(EventID, EventGadgetID, EventType)
             If row >= 0
               Select col
                 Case 3 ; select
-                  file.s = OpenFileRequester(Language("Form", "SelectImage"),"",Language("Form", "MaskAllFiles"),0)
+                  file.s = OpenFileRequester(Language("Form", "SelectImage"),"",Language("Form", "MaskAllFiles"),0, 0, WindowID(#WINDOW_Main))
                   If file
                     SelectElement(FormWindows()\FormImg(),row)
                     grid_SetCellString(imglist_grid,0,row,file)

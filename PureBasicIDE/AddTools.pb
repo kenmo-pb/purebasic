@@ -795,7 +795,7 @@ Procedure AddTools_EditWindowEvents(EventID)
         CompilerElse
           Pattern$ = ""
         CompilerEndIf
-        File$ = OpenFileRequester(Language("AddTools","ChooseExe"), GetGadgetText(#GADGET_EditTools_CommandLine), Pattern$, 0)
+        File$ = OpenFileRequester(Language("AddTools","ChooseExe"), GetGadgetText(#GADGET_EditTools_CommandLine), Pattern$, 0, 0, WindowID(#WINDOW_EditTools))
         If File$ <> ""
           SetGadgetText(#GADGET_EditTools_CommandLine, File$)
         EndIf

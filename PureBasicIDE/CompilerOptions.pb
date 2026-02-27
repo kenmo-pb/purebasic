@@ -914,7 +914,7 @@ Procedure OptionWindowEvents(EventID)
             File$ = Options_CurrentBasePath$
           EndIf
           
-          File$ = OpenFileRequester(Language("Compiler","OpenMainFile"), File$, Language("Compiler","SourcePattern"), 0)
+          File$ = OpenFileRequester(Language("Compiler","OpenMainFile"), File$, Language("Compiler","SourcePattern"), 0, 0, WindowID(#WINDOW_Option))
           If File$
             SetGadgetText(#GADGET_Option_MainFile, CreateRelativePath(Options_CurrentBasePath$, File$))
           EndIf
@@ -979,7 +979,7 @@ Procedure OptionWindowEvents(EventID)
               Pattern$ = ReplaceString(Pattern$, "ico", "icns")
             CompilerEndIf
             
-            File$ = OpenFileRequester(Language("Compiler","OpenIcon"), File$, Pattern$, 0)
+            File$ = OpenFileRequester(Language("Compiler","OpenIcon"), File$, Pattern$, 0, 0, WindowID(#WINDOW_Option))
             If File$
               
               If SelectedFilePattern() = 0 And GetExtensionPart(File$) = ""
@@ -1005,7 +1005,7 @@ Procedure OptionWindowEvents(EventID)
               File$ = Options_CurrentBasePath$
             EndIf
             
-            File$ = OpenFileRequester(Language("Compiler","OpenLinkerFile"), File$, Language("Compiler","AllFilesPattern"), 0)
+            File$ = OpenFileRequester(Language("Compiler","OpenLinkerFile"), File$, Language("Compiler","AllFilesPattern"), 0, 0, WindowID(#WINDOW_Option))
             If File$
               SetGadgetText(#GADGET_Option_Linker, CreateRelativePath(Options_CurrentBasePath$, File$))
             EndIf
@@ -1388,7 +1388,7 @@ Procedure OptionWindowEvents(EventID)
               File$ = Options_CurrentBasePath$
             EndIf
             
-            File$ = OpenFileRequester(Language("Resources","OpenResource"), File$, Language("Resources","ResourcePattern"), 0)
+            File$ = OpenFileRequester(Language("Resources","OpenResource"), File$, Language("Resources","ResourcePattern"), 0, 0, WindowID(#WINDOW_Option))
             If File$ <> ""
               SetGadgetText(#GADGET_Option_ResourceFile, CreateRelativePath(Options_CurrentBasePath$, File$))
             EndIf

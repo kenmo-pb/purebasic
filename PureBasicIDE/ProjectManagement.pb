@@ -1304,7 +1304,7 @@ Procedure LoadProject(Filename$)
         ForEach ProjectFiles()
           If FileSize(ProjectFiles()\FileName$) < 0
             If MessageRequester(#ProductName$, LanguagePattern("Project","FileMissing", "%filename%", ProjectFiles()\Filename$), #PB_MessageRequester_YesNo|#FLAG_Question) = #PB_MessageRequester_Yes
-              NewFileName$ = OpenFileRequester(Language("FileStuff","OpenFileTitle"), ProjectFiles()\FileName$, Language("Compiler","AllFilesPattern"), 0)
+              NewFileName$ = OpenFileRequester(Language("FileStuff","OpenFileTitle"), ProjectFiles()\FileName$, Language("Compiler","AllFilesPattern"), 0, 0, WindowID(#WINDOW_Main))
               
               ; If the user aborts, keep the old filename. The file will not be scanable etc,
               ; but it will be saved back to the project file with all options so maybe it is
@@ -1813,7 +1813,7 @@ Procedure OpenProject()
       Path$ = SourcePath$
     EndIf
     
-    FileName$ = OpenFileRequester(Language("Project","TitleOpen"), Path$, Language("Project","Pattern"), 0)
+    FileName$ = OpenFileRequester(Language("Project","TitleOpen"), Path$, Language("Project","Pattern"), 0, 0, WindowID(#WINDOW_Main))
     If FileName$ <> ""
       LoadProject(FileName$) ; closes the old project if still open
     EndIf
@@ -2566,7 +2566,7 @@ Procedure ProjectOptionsEvents(EventID)
           Path$ = GetPathPart(ProjectFile$)
         EndIf
         
-        FileName$ = OpenFileRequester(Language("FileStuff","OpenFileTitle"), Path$, Language("FileStuff","Pattern"), SelectedFilePattern, #PB_Requester_MultiSelection)
+        FileName$ = OpenFileRequester(Language("FileStuff","OpenFileTitle"), Path$, Language("FileStuff","Pattern"), SelectedFilePattern, #PB_Requester_MultiSelection, WindowID(#WINDOW_ProjectOptions))
         If FileName$ <> ""
           SelectedFilePattern = SelectedFilePattern()
           
